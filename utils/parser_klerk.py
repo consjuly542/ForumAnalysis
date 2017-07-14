@@ -1,10 +1,5 @@
 ''' Script for Klerk forum data parsing '''
 
-# Last processed data is in following folder:
-# ../data/processed/klerk
-# It was collected using following command:
-# python parser_klerk.py -i "<SOME_PATH>\data\klerk" -m 100 -d "../data/processed/klerk"
-
 import argparse
 import os
 from os import path
