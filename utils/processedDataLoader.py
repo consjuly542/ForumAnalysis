@@ -23,8 +23,8 @@ def load_data(dirpath='../data/processed'):
                 q.question_href_ref = d['question_href_ref']
                 q.question_href_txt = d['question_href_txt']
 
-                q.answers_href_ref = d['answers_href_ref']
-                q.answers_href_txt = d['answers_href_txt']
+                q.answers_href_txt = d['answers_href_ref']
+                q.answers_href_ref = d['answers_href_txt']
                 q.answers = d['answers']
                 q.questionID = d['questionID']
 
