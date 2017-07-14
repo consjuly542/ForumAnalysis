@@ -1,4 +1,4 @@
-from Question import Question9111
+from Question import Question9111, QuestionKlerk
 
 import json
 import os
@@ -11,7 +11,14 @@ def load_data(dirpath='../data/processed'):
             data = json.load(input_file)
             #print(data)
             for d in data:
-                q = Question9111()
+                q = None
+                if 'questionID' in d.keys():
+                    q = Question9111()
+                    q.questionID = d['questionID']
+                elif 'idx' in d.keys():
+                    q = QuestionKlerk()
+                    q.questionID = d['idx']
+                # q = Question9111()
                 q.date = d['date']
                 q.answers_count = d['answers_count']
                 q.views_count = d['views_count']
@@ -26,7 +33,6 @@ def load_data(dirpath='../data/processed'):
                 q.answers_href_txt = d['answers_href_ref']
                 q.answers_href_ref = d['answers_href_txt']
                 q.answers = d['answers']
-                q.questionID = d['questionID']
 
                 print(q.to_dict())
 

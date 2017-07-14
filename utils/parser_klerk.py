@@ -54,7 +54,10 @@ def get_date(soup):
     ------------
     * (string): topic creation date
     '''
-    container = soup.find_all('li', {'class': 'postcontainer'})[0]
+    container = soup.find_all('li', {'class': 'postcontainer'})
+    if not container:
+        return None
+    container = container[0]
     date = container.find_all('span', {'class': 'date'})[0].text
     date = date.split(',')[0]
     date = '.'.join(reversed(date.split('.')))
@@ -72,7 +75,10 @@ def get_answers_count(soup):
     ------------
     * (int): number of answers
     '''
-    poststats = soup.find_all('div', {'class': 'postpagestats'})[0].text
+    poststats = soup.find_all('div', {'class': 'postpagestats'})
+    if not poststats:
+        return None
+    poststats = poststats[0].text
     return int(poststats.strip().split(' ')[-1]) - 1
 
 def get_themes(soup):
@@ -106,7 +112,10 @@ def get_post_text(soup):
     ------------
     * (string): post text
     '''
-    return soup.find_all('blockquote')[0].text.strip()
+    container = soup.find_all('blockquote')
+    if not container:
+        return None
+    return container[0].text.strip()
 
 def get_post_hrefs(soup):
     '''
@@ -120,9 +129,13 @@ def get_post_hrefs(soup):
     ------------
     * (string[], string[]): tuple of (array of texts) and (array of hrefs)
     '''
+    container = soup.find_all('blockquote')
+    if not container:
+        return None
+
     post_href_texts = []
     post_href_refs = []
-    post_hrefs = [(a.string, a.get('href')) for a in soup.find_all('blockquote')[0].find_all('a')]
+    post_hrefs = [(a.string, a.get('href')) for a in container[0].find_all('a')]
     for href in post_hrefs:
         text = href[0]
         if not text:
@@ -173,6 +186,28 @@ def update_views_count(data, idx, views_count):
             return i
     return False
 
+def add_thread_data(data, q_data):
+    '''
+    Function for updating specific Question (with the same id as q_data has)
+    (for multi-page threads)
+
+    Parameters
+    ------------
+    * data (QuestionKlerk[]): array of questions
+    * q_data (QuestionKlerk): question data that contains updated values
+
+    Returns
+    ------------
+    None
+    '''
+    for i, d in enumerate(data):
+        if q_data.idx == d.idx:
+            data[i].question_href_ref = data[i].question_href_ref + q_data.question_href_ref
+            data[i].question_href_txt = data[i].question_href_txt + q_data.question_href_txt
+            data[i].answers_href_ref = data[i].answers_href_ref + q_data.answers_href_ref
+            data[i].answers_href_txt = data[i].answers_href_txt + q_data.answers_href_txt
+            data[i].answers = data[i].answers + q_data.answers
+
 def dump_data(name, data, batch_size):
     '''
     Cuts data into batches and dumps them into json files
@@ -190,11 +225,29 @@ def dump_data(name, data, batch_size):
     length = len(data)
     for i in range(int(length / batch_size)):
         batch = data[i*batch_size:(i+1)*batch_size]
-        batch_dict = [q.to_dict() for q in batch]
-        if len(batch_dict) == 0:
+        if not dump_batch(name, batch, i):
             break
-        with open(name + '-' + str(i), 'w') as fp_out:
-            json.dump(batch_dict, fp_out)
+
+def dump_batch(name, batch, batch_number):
+    '''
+    Dumps data batch into json file
+
+    Parameters
+    ------------
+    * name (string): filename prefix [<name>-<batch_number>] (may include path)
+    * batch (QuestionKlerk[]): array of questions (batch)
+    * batch_number (int): batch number
+
+    Returns
+    ------------
+        (boolean): True if dumped, False otherwise
+    '''
+    batch_dict = [q.to_dict() for q in batch]
+    if len(batch_dict) == 0:
+        return False
+    with open(name + '-' + str(batch_number), 'w', encoding='utf-8') as fp_out:
+        json.dump(batch_dict, fp_out)
+    return True
 
 def main():
     ''' Main function '''
@@ -227,9 +280,12 @@ def main():
         batch_size = int(batch_size)
     print('Batch Size:', batch_size)
 
+    idxs = []
     data = []
     views = []
     cnt = 0
+    # batch_cnt = 0
+    # batch_number = 0
     stop_flag = False
     # TODO: optimize crawling
     for root, dirs, _ in os.walk(data_path):
@@ -264,6 +320,8 @@ def main():
                             themes = get_themes(soup)
 
                             posts = soup.find_all('li', {'class': 'postbitim'})
+                            if not posts:
+                                continue
                             question_full = get_post_text(posts[0])
                             post_href_texts, post_href_refs = get_post_hrefs(posts[0])
                             question_href_ref = post_href_refs
@@ -293,11 +351,24 @@ def main():
                             q.answers_href_txt = answers_href_txt
                             q.answers = answers
 
-                            data.append(q)
-                            cnt = cnt + 1
-                            if cnt >= max_cnt:
-                                stop_flag = True
-                                break
+                            if idx in idxs:
+                                add_thread_data(data, q)
+                                print('update')
+                            else:
+                                data.append(q)
+                                idxs.append(idx)
+                                cnt = cnt + 1
+                                print('add')
+                                if cnt % batch_size == 0:
+                                    print("******:::", cnt)
+                            # batch_cnt = batch_cnt + 1
+                            # if batch_cnt == batch_size:
+                            #     dump_batch(path.join(dump_folder, 'data' + str(max_cnt)), data, batch_number)
+                            #     data.clear()
+                            #     batch_number = batch_number + 1
+                                if max_cnt and cnt >= max_cnt:
+                                    stop_flag = True
+                                    break
                         else:
                             topics = soup.find_all('li', {'class': 'threadbit'})
                             for topic in topics:
@@ -324,7 +395,6 @@ def main():
     for view in views:
         update_views_count(data, view[0], view[1])
 
-    print(len(data))
     dump_data(path.join(dump_folder, 'data' + str(max_cnt)), data, batch_size)
 
 if __name__ == '__main__':
