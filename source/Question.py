@@ -1,6 +1,7 @@
 class Question:
 
     def __init__(self):
+        #year, month, day
         self.date = "0000.00.00"
         self.answers_count = -1
         self.views_count = -1
@@ -24,13 +25,10 @@ class Question:
         return self.__dict__
     
     def get_all_text(self):
-        all_text = self.question_title + self.question_full
-        if self.question_href_txt:
-            all_text += reduce(lambda x,y: x + y, self.question_href_txt)
-        if self.answers_href_txt:
-            all_text += reduce(lambda x,y: x + y, self.answers_href_txt)
-        if self.answers:
-            all_text += reduce(lambda x,y: x + y, self.answers)
+        all_text = self.question_title + " " + self.question_full + " "
+        all_text += " ".join(self.question_href_txt) + " "
+        all_text += " ".join(self.answers_href_txt) + " "
+        all_text += " ".join(self.answers)
         return all_text
 
 

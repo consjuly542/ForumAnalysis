@@ -28,7 +28,7 @@ class Link(object):
             cur_idx = idx * 4 + 1
 
             # print(idx, cur_idx  + 3)
-            #part for point
+            # part for point
             if re_part == 0:
                 if (matches[cur_idx + 0].startswith("п") or matches[cur_idx + 3].startswith("п")):
                     self.part_name == "пункт"
