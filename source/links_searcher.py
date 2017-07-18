@@ -115,17 +115,14 @@ class LinksSearcher(object):
         for i_1, l_1 in enumerate(links_list[1:]):
             is_uniq = True
             for j_1, l_2 in enumerate(uniq_links):
-                if l_2.is_equal(l_1, 'hard'):
+                if l_2.is_equal(l_1, 'soft'):
                     # print (l_1, l_2)
                     is_uniq = False
                     break
             if is_uniq:
                 uniq_links.append(l_1)
                                 
-        for l in uniq_links:
-            print (l.print_link())
+        # for l in uniq_links:
+        #     print (l.print_link())
             
         return uniq_links
-
-
-links = LinksSearcher('ст. 25 ФЗ №3586').get_simple_links()
