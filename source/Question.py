@@ -1,5 +1,5 @@
 class Question:
-
+    
     def __init__(self):
         #year, month, day
         self.date = "0000.00.00"

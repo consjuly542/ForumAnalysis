@@ -101,14 +101,6 @@ class LinksSearcher(object):
                         re_all = re.compile('(' + r_1 + re_delimeter + r_2 +  re_delimeter + r_3 + ')')
 #                         print ('(' + r_1 + re_delimeter + r_2 +  re_delimeter + r_3 + ')')
                         all_matches = re.findall(re_all, self.text.lower())
-                        # print (all_matches)
-                        # link = Link(all_matches[0], [i, j, k])
-                        # link.print_link()
-                        # if all_matches:
-                        # print(all_matches[0])
-                        # print ("sgsyLDJSHNLKJSENILEGBJNILSEGBNILES")
-                        # for matches in all_matches:
-                            # print (matches)
                         links_list += [Link(matches, [i, j, k]) for matches in all_matches if isinstance(matches,tuple)]
     
         uniq_links = [links_list[0]]

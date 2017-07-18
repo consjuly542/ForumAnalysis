@@ -1,38 +1,10 @@
-
-# coding: utf-8
-
-# In[1]:
-
 import json
 import os
-
-
-# In[2]:
-
-class Article:
-
-    def __init__(self):
-        self.law = "None"
-        self.article = "None"
-        self.article_num = "None"
-        self.law_num = "None"
-        self.flaw_num = "None"
-        self.chapter_num = "None"
-        self.date = "0000.00.00"
-        self.edit_date = "0000.00.00"
-        self.law_ID = "None"
-        self.article_ID = "None"
-        self.article_link = "None"
-
-    def to_dict(self):
-        return self.__dict__
+from Article import Article
     
-
-
-# In[7]:
-
 def load_data():
-    f = open('article_list_laws.txt', 'r')
+    law_list = []
+    f = open('../data/article_list_laws.txt', 'r')
     data = json.load(f)
     #print(data)
     for d in data:
@@ -50,13 +22,13 @@ def load_data():
         a.article_ID = d['article_ID']
         a.article_link = d['article_link']
 
-        print(a.to_dict())
+        law_list.append(a)
+
+    return law_list
 
 if __name__ == '__main__':
-    load_data()
+    print(len(load_data()))
 
-
-# In[ ]:
 
 
 
