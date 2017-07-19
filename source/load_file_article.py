@@ -3,7 +3,7 @@ import os
 from Article import Article
     
 def load_data():
-    law_list = []
+    article_list = []
     f = open('../data/article_list_laws.txt', 'r')
     data = json.load(f)
     #print(data)
@@ -22,9 +22,9 @@ def load_data():
         a.article_ID = d['article_ID']
         a.article_link = d['article_link']
 
-        law_list.append(a)
+        article_list.append(a)
 
-    return law_list
+    return article_list
 
 if __name__ == '__main__':
     print(len(load_data()))

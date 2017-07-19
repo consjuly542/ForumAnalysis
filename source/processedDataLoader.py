@@ -1,4 +1,5 @@
 from Question import Question9111
+from Question import QuestionKlerk
 
 import json
 import os
@@ -6,8 +7,8 @@ import os
 
 def load_data(dirpath='./data/processed'):
     question_list = []
-    for file in os.listdir(dirpath)[:120]:
-        filepath = os.path.join(dirpath, file)
+    for filename in os.listdir(dirpath)[:120]:
+        filepath = os.path.join(dirpath, filename)
         with open(filepath) as input_file:
             data = json.load(input_file)
             
@@ -25,8 +26,8 @@ def load_data(dirpath='./data/processed'):
                 q.question_href_ref = d['question_href_ref']
                 q.question_href_txt = d['question_href_txt']
 
-                q.answers_href_txt = d['answers_href_ref']
-                q.answers_href_ref = d['answers_href_txt']
+                q.answers_href_txt = d['answers_href_txt']
+                q.answers_href_ref = d['answers_href_ref']
                 q.answers = d['answers']
                 q.questionID = d['questionID']
                 question_list.append(q)
@@ -39,13 +40,20 @@ def loadDataGenerator(dirpath = '../data/processed'):
     batch_size = 10
     while cur_file < len(listdir):
         question_list = []
-        for file in listdir[]:
-            filepath = os.path.join(dirpath, file)
+        for filename in listdir[cur_file:cur_file + batch_size]:
+            filepath = os.path.join(dirpath, filename)
             with open(filepath) as input_file:
                 data = json.load(input_file)
                 #print(data)
+                
                 for d in data:
-                    q = Question9111()
+                    if filename.lower().find("klerk") != -1:
+                        q = QuestionKlerk()
+                        q.idx = d['idx']
+                    else:
+                        q = Question9111()
+                        q.questionID = d['questionID']
+
                     q.date = d['date']
                     q.answers_count = d['answers_count']
                     q.views_count = d['views_count']
@@ -57,14 +65,14 @@ def loadDataGenerator(dirpath = '../data/processed'):
                     q.question_href_ref = d['question_href_ref']
                     q.question_href_txt = d['question_href_txt']
 
-                    q.answers_href_ref = d['answers_href_ref']
-                    q.answers_href_txt = d['answers_href_txt']
+                    #не баг, а фича
+                    q.answers_href_ref = d['answers_href_txt']
+                    q.answers_href_txt = d['answers_href_ref']
                     q.answers = d['answers']
-                    q.questionID = d['questionID']
                     question_list.append(q)
 
         cur_file += batch_size
-        yeild question_list
+        yield question_list
 
 # if __name__ == '__main__':
 #     load_data()

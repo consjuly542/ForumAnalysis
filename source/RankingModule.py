@@ -1,0 +1,3 @@
+
+class RankingModule(Module):
+	def 

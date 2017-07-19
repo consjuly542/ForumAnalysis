@@ -31,8 +31,13 @@ class Question:
         all_text += " ".join(self.answers)
         return all_text
 
-
 class Question9111(Question):
     def __init__(self):
         self.questionID = ""
         super().__init__()
+
+class QuestionKlerk(Question):
+    def __init__(self):
+        self.idx = ""
+        super().__init__()
+
