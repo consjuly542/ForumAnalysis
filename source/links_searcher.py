@@ -50,8 +50,8 @@ class Link(object):
             if re_part == 2:
                 if matches[cur_idx + 0]:
                     self.law_name = matches[cur_idx + 0]
-                if matches[cur_idx + 3].startswith("\""):
-                    self.law_name = matches[cur_idx + 3][1:-1]
+                if matches[cur_idx + 2].startswith("\""):
+                    self.law_name = matches[cur_idx + 2][1:-1]
                 if matches[cur_idx + 3].isdigit():
                     self.law_num = matches[cur_idx + 3]
 
@@ -93,7 +93,7 @@ class LinksSearcher(object):
     def get_simple_links(self):
         re_point = r'(?:(?:\b(пункт|часть|п|ч)\s*\.?\s*(\d+)(?:\s*\.)?)|(?:(\d+)\s*\.?\s*(пункт|часть|п|ч)(?:\s*\.)?))?'
         re_article = r'(?:\b(?:(статья|ст|c)\s*\.?\s*(\d+(?:\.\d+)*)(?:\s*\.)?)|(?:(\d+)\s*\.?\s*(статья|ст|c)(?:\s*\.)?))'
-        re_name = r'(?:\b([а-я]к)(?:\s?(рф|российск[а-я]{2} федераци[а-я])?)|(фз|федеральн[а-я]{2-3} закона?)\s?(?:"[\w\s]+"|(?:N|№)?\s?(\d+)))'
+        re_name = r'(?:\b([а-я]к)(?:\s?(рф|российск[а-я]{2} федераци[а-я])?)|(?:фз|федеральн[а-я]{2-3} закона?)\s?(?:("[\w\s]+")|(?:N|№)?\s?(\d+)))'
         re_delimeter = r'\s{,3}'
         re_parts = [re_point, re_article, re_name]
         links_list = []
