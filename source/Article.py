@@ -18,5 +18,5 @@ class Article:
     def to_dict(self):
         return self.__dict__
 
-    def __hash__(self):
-        return hash(self.article_ID)
+    # def __hash__(self):
+    #     return hash(self.article_ID)

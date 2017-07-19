@@ -1,40 +1,13 @@
 
-# coding: utf-8
-
-# In[1]:
-
 import json
 import os
 import re
 from links_searcher import Link
 import pickle
-
-
-# In[2]:
-
-class Article:
-
-    def __init__(self):
-        self.law = "None"                 #без кавычек
-        self.article = "None"             #без кавычек
-        self.article_num = "None"
-        self.law_num = "None"
-        self.flaw_num = "None"
-        self.chapter_num = "None"
-        self.date = "0000.00.00"
-        self.edit_date = "0000.00.00"
-        self.law_ID = "None"
-        self.article_ID = "None"           #law_ID + '_' + article_num
-        self.article_link = "None"
-
-    def to_dict(self):
-        return self.__dict__
-
-
-# In[3]:
+from Article import Article
 
 def load_data():
-    f = open('article_list_laws.txt', 'r')
+    f = open('../data/article_list_laws.txt', 'r')
     article_list = []
     data = json.load(f)
     #print(data)
@@ -58,12 +31,6 @@ def load_data():
         article_list.append(a.to_dict())
 
     return(article_list)
-
-#if __name__ == '__main__':
-#    load_data()
-
-
-# In[4]:
 
 def full_codec_name(law_name):
     if (law_name.find('апк')==0):
@@ -105,9 +72,6 @@ def full_codec_name(law_name):
     return(codec_name)
             
 
-
-# In[5]:
-
 def list_to_dict(article_list):
     law_dict = {}
     law_ID = article_list[0]['law_ID']
@@ -125,15 +89,11 @@ def list_to_dict(article_list):
     return(law_dict)
 
 
-# In[6]:
-
 def load_link():
     with open("./links_example", "rb") as f:
         links_example = pickle.load(f)
         return(links_example)
 
-
-# In[7]:
 
 def link_to_article_ID(link, article_dict):
     article_ID = ''
@@ -142,7 +102,7 @@ def link_to_article_ID(link, article_dict):
     article = link.article_num
     ID = law_searcher(number, name, article_dict)
 #     print(article_dict[ID]['law_name'])
-    if(ID == ''):
+    if ID == '':
         return(None)
     for art in article_dict[ID]['articles']:
 #         print(article_dict[ID]['articles'][art]['article_num'])
@@ -150,10 +110,9 @@ def link_to_article_ID(link, article_dict):
         if article==article_dict[ID]['articles'][art]['article_num']:
             article_ID = article_dict[ID]['articles'][art]['article_ID']
             break
-    return(article_ID)
-
-
-# In[8]:
+    if(article_ID == ''):
+        return(None)
+    return article_ID
 
 def law_searcher(number, name, a_dict):
     ID = ''
@@ -161,7 +120,7 @@ def law_searcher(number, name, a_dict):
         name = full_codec_name(name)
     if number:
         for law in a_dict:
-            if number.find(a_dict[law]['law_num'])==0:
+            if number.find(a_dict[law]['law_num']) == 0:
                 number = a_dict[law]['law_num']
                 ID = a_dict[law]['law_ID']
                 break
@@ -172,9 +131,6 @@ def law_searcher(number, name, a_dict):
                 ID = a_dict[law]['law_ID']
                 break
     return(ID)
-
-
-# In[9]:
 
 def ID_to_Article(article_ID, article_list):
     a = Article()
@@ -194,43 +150,15 @@ def ID_to_Article(article_ID, article_list):
             break
     return(a)
 
-
-# In[ ]:
-
 def link_to_article(link):
     article_list = load_data()
     article_dict = list_to_dict(article_list)
     article_ID = link_to_article_ID(link, article_dict)
+    if article_ID is None:
+        return None
     a = Article()
     a = ID_to_Article(article_ID, article_list)
     
     return(a)
-
-
-# In[10]:
-
-# article_list = load_data()
-# article_dict = list_to_dict(article_list)
-# links = load_link()
-# a = Article()
-# article_ID = link_to_article(link, article_dict)
-# a = ID_to_Article(article_ID, article_list)
-
-# # article_ID = link_to_article(links[0], article_dict)
-
-
-# # print(link[0].to_dict())
-# # print(article_ID)
-# # a = Article()
-# # a = ID_to_Article(article_ID, article_list)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
 
 
