@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-3 col-md-12 filters">
+        <div class="filters-inner affix">
+            <form>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="filter_codex" class="col-sm-4 col-form-label">Кодекс</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id="filter_codex">
+                                <option>-</option>
+                                <option>Гражданский кодекс</option>
+                                <option>Административный кодекс</option>
+                                <option>Градостроительный кодекс</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="last_name" class="col-sm-4 col-form-label">Дата</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" id="last_name" name="last_name">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-9 articles">
+        {% for item in data %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card z-level-2 article-stats">
+                    <div class="card-block">
+                        <div class="block-header">
+                            <h4 class="card-title">
+                                <a href="{{item.article_link}}" target="_blank">
+                                    Статья {{ item.article_num }} "{{ item.article }}"
+                                </a>
+                            </h4>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ item.law }} от {{ item.date }} N{{item.law_num}}</h6>
+                        </div>
+                        <div class="card-text">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-4 col-sm-4"><u>Упоминаний:</u> 152</div>
+                                <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item.date }}</div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h5>Вопросы</h5>
+                                    <ul class="question-list">
+                                        <li>Some quick example text to build on the card title and make up the bulk of the card's content.</li>
+                                        <li>Some quick example text to build on the card title and make up the bulk of the card's content.</li>
+                                        <li>Some quick example text to build on the card title and make up the bulk of the card's content.</li>
+                                        <li><a href="#">Смотреть все</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h5>Динамика</h5>
+                                    <div class="justify-content-md-center">
+                                        <img src="{{ url_for('static', filename='graph.png') }}" class="img-fluid" alt="Dynamics">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    $(document).ready(function() {
+    });
+    $('.article-stats .card-block .block-header').bind('click', function() {
+        var card_block = $(this).closest('.card-block');
+        var card_text = $(card_block).find('.card-text');
+        $(card_text).slideToggle(500);
+    });
+</script>
+{% endblock %}

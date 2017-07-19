@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from processedDataLoader import loadDataGenerator
 import load_file_article
 from ArticleStatistics import ArticleStatistics
@@ -67,11 +70,9 @@ class StatisticsModule(object):
 		elif rank_type == 'by_mean_cnt_questions':
 			self.cur_articles_list = sorted(self.cur_articles_list, operator.attrgetter('cur_mean_answers'))
 			self.articles_list_all = sorted(self.article_index.values(), operator.attrgetter('cur_mean_answers'))
-		elif trank_type == 'by_date':
-			self.cur_articles_list = sorted(self.cur_articles_list, operator.attrgetter('last_date'),\
-									 inverse = True)
-			self.articles_list_all = sorted(self.article_index.values(), operator.attrgetter('cur_mean_answers'), 
-									inverse = True)
+		elif rank_type == 'by_date':
+			self.cur_articles_list = sorted(self.cur_articles_list, operator.attrgetter('last_date'), inverse = True)
+			self.articles_list_all = sorted(self.article_index.values(), operator.attrgetter('cur_mean_answers'), inverse = True)
 
 		self.is_ranked = True
 		self.rank_type = rank_type
