@@ -57,6 +57,7 @@ def load_data():
         
         article_list.append(a.to_dict())
 
+    f.close()
     return(article_list)
 
 #if __name__ == '__main__':
@@ -150,6 +151,8 @@ def link_to_article_ID(link, article_dict):
         if article==article_dict[ID]['articles'][art]['article_num']:
             article_ID = article_dict[ID]['articles'][art]['article_ID']
             break
+    if(article_ID == ''):
+        return(None)
     return(article_ID)
 
 
@@ -201,6 +204,8 @@ def link_to_article(link):
     article_list = load_data()
     article_dict = list_to_dict(article_list)
     article_ID = link_to_article_ID(link, article_dict)
+    if(article_ID == None):
+        return(None)
     a = Article()
     a = ID_to_Article(article_ID, article_list)
     
