@@ -31,9 +31,9 @@ class Link(object):
             # part for point
             if re_part == 0:
                 if (matches[cur_idx + 0].startswith("п") or matches[cur_idx + 3].startswith("п")):
-                    self.part_name == "пункт"
+                    self.part_name = "пункт"
                 elif (matches[cur_idx + 0].startswith("ч") or matches[cur_idx + 3].startswith("ч")):
-                    self.part_name == "часть"
+                    self.part_name = "часть"
                 if matches[cur_idx + 1]:
                     self.part_num = matches[cur_idx + 1]
                 elif matches[cur_idx + 2]:
@@ -74,6 +74,9 @@ class Link(object):
             else:
                 return False  
 
+    def to_dict(self):
+        return self.__dict__
+
 
 
 #TODO: включить в регулярки поные названия кодексов
@@ -85,6 +88,7 @@ class LinksSearcher(object):
     def __init__(self, text):
         self.text = text
         self.cnr_links = 0
+        # print (text)
         
     def get_simple_links(self):
         re_point = r'(?:(?:\b(пункт|часть|п|ч)\s*\.?\s*(\d+)(?:\s*\.)?)|(?:(\d+)\s*\.?\s*(пункт|часть|п|ч)(?:\s*\.)?))?'
@@ -102,17 +106,19 @@ class LinksSearcher(object):
 #                         print ('(' + r_1 + re_delimeter + r_2 +  re_delimeter + r_3 + ')')
                         all_matches = re.findall(re_all, self.text.lower())
                         links_list += [Link(matches, [i, j, k]) for matches in all_matches if isinstance(matches,tuple)]
-    
-        uniq_links = [links_list[0]]
-        for i_1, l_1 in enumerate(links_list[1:]):
-            is_uniq = True
-            for j_1, l_2 in enumerate(uniq_links):
-                if l_2.is_equal(l_1, 'soft'):
-                    # print (l_1, l_2)
-                    is_uniq = False
-                    break
-            if is_uniq:
-                uniq_links.append(l_1)
+        if links_list:
+            uniq_links = [links_list[0]]
+            for i_1, l_1 in enumerate(links_list[1:]):
+                is_uniq = True
+                for j_1, l_2 in enumerate(uniq_links):
+                    if l_2.is_equal(l_1, 'soft'):
+                        # print (l_1, l_2)
+                        is_uniq = False
+                        break
+                if is_uniq:
+                    uniq_links.append(l_1)
+        else:
+            uniq_links = []
                                 
         # for l in uniq_links:
         #     print (l.print_link())

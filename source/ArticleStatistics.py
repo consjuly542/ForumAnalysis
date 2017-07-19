@@ -1,5 +1,6 @@
 from Article import Article
 from Question import Question
+#year, month, day
 from datetime import date
 
 class ArticleStatistics (object):
@@ -14,6 +15,7 @@ class ArticleStatistics (object):
 		self.parts_statistics = {}
 		self.questions_cnt = 0
 		self.sum_answers_cnt = 0
+		self.cur_mean_answers = 0
 		self.questions = []
 		self.dates = []
 		self.first_date = None
@@ -30,6 +32,8 @@ class ArticleStatistics (object):
 
 		self.questions_cnt += 1
 		self.sum_answers_cnt += len(question.answers)
+
+		self.cur_mean_answers = float(self.sum_answers_cnt) / self.questions_cnt
 
 		self.question.append(Question)
 
