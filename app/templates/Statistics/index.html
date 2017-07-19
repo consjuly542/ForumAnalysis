@@ -37,26 +37,26 @@
                         <div class="block-header">
                             <h4 class="card-title">
                                 <a href="{{item.article_link}}" target="_blank">
-                                    Статья {{ item['official_article'].article_num }} "{{ item['official_article'].article }}"
+                                    Статья {{ item['official_article']['article_num'] }} "{{ item['official_article']['article'] }}"
                                 </a>
                             </h4>
-                            <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article'].law }} от {{ item['official_article'].date }} N{{item['official_article'].law_num}}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article']['law'] }} от {{ item['official_article']['date'] }} N{{item['official_article']['law_num']}}</h6>
                         </div>
                         <div class="card-text">
                             <div class="row">
                                 <div class="col-lg-3 col-md-4 col-sm-4"><u>Вопросов:</u> {{ item['questions_cnt'] }}</div>
                                 <div class="col-lg-3 col-md-4 col-sm-4"><u>Ответов:</u> {{ item['sum_answers_cnt'] }}</div>
-                                <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item['official_article'].date }}</div>
+                                <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item['last_date'] }}</div>
                             </div>
                             <hr/>
                             <div class="row">
                                 <div class="col-lg-12">
                                     <h5>Вопросы</h5>
                                     <ul class="question-list">
-                                        <li>Some quick example text to build on the card title and make up the bulk of the card's content.</li>
-                                        <li>Some quick example text to build on the card title and make up the bulk of the card's content.</li>
-                                        <li>Some quick example text to build on the card title and make up the bulk of the card's content.</li>
-                                        <li><a href="#">Смотреть все</a></li>
+                                        {% for q in item['questions'] %}
+                                        <li class="item-question">{{ q['question_full'] }} <i>[{{ q['date'] }}]</i></li>
+                                        {% endfor %}
+                                        <li class="toggle-questions">Смотреть все</li>
                                     </ul>
                                 </div>
                             </div>
@@ -81,11 +81,30 @@
 {% block scripts %}
 <script type="text/javascript">
     $(document).ready(function() {
+        $('.question-list').each(function(index) {
+            var questions = $(this).find('.item-question');
+            if(questions.length > 3) {
+                $(this).find('.toggle-questions').show();
+            }
+            $(this).find('.item-question').slice(0, 3).show();
+        });
     });
     $('.article-stats .card-block .block-header').bind('click', function() {
         var card_block = $(this).closest('.card-block');
         var card_text = $(card_block).find('.card-text');
         $(card_text).slideToggle(500);
+    });
+    $('.toggle-questions').bind('click', function() {
+        var question_list = $(this).closest('.question-list');
+        var value = $(this).text();
+        if(value == 'Смотреть все') {
+            $(question_list).find('.item-question').show();
+            $(this).text('Свернуть');
+        } else {
+            $(question_list).find('.item-question').slice(3).hide();
+            $(this).text('Смотреть все');
+        }
+        
     });
 </script>
 {% endblock %}

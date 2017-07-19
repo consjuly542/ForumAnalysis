@@ -21,10 +21,7 @@ def index():
 def fun():
     return render_template('fun.html')
 
-from app.module.LinkSearcherWeb.index import link_searcher_page
-app.register_blueprint(link_searcher_page, url_prefix='/links')
-
-from app.module.StatisticsWeb.index import statistics_page
+from app.module.StatisticsWeb import statistics_page
 app.register_blueprint(statistics_page, url_prefix='/statistics')
 
 # cd app

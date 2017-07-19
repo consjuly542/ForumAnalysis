@@ -90,3 +90,17 @@ a:hover {
     display: none;
     font-size: 25px;
 }
+
+.item-question {
+    display: none;
+}
+
+.toggle-questions {
+    cursor: pointer;
+    color: #669;
+    display: none;
+}
+
+.toggle-questions:hover {
+    color: #ffb13d;
+}

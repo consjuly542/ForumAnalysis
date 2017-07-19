@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from source.Article import Article
-from source.Question import Question
+from Article import Article
+from Question import Question
 # year, month, day
 from datetime import date
 

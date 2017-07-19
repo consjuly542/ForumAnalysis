@@ -1,7 +1,5 @@
-
-# coding: utf-8
-
-# In[1]:
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import json
 import os
@@ -9,8 +7,6 @@ import re
 from links_searcher import Link
 import pickle
 
-
-# In[2]:
 
 class Article:
 
@@ -29,9 +25,6 @@ class Article:
 
     def to_dict(self):
         return self.__dict__
-
-
-# In[3]:
 
 def load_data():
     f = open('article_list_laws.txt', 'r')
@@ -59,12 +52,6 @@ def load_data():
 
     f.close()
     return(article_list)
-
-#if __name__ == '__main__':
-#    load_data()
-
-
-# In[4]:
 
 def full_codec_name(law_name):
     if (law_name.find('апк')==0):
@@ -105,10 +92,6 @@ def full_codec_name(law_name):
         return(law_name)
     return(codec_name)
             
-
-
-# In[5]:
-
 def list_to_dict(article_list):
     law_dict = {}
     law_ID = article_list[0]['law_ID']
@@ -125,16 +108,10 @@ def list_to_dict(article_list):
         
     return(law_dict)
 
-
-# In[6]:
-
 def load_link():
     with open("./links_example", "rb") as f:
         links_example = pickle.load(f)
         return(links_example)
-
-
-# In[7]:
 
 def link_to_article_ID(link, article_dict):
     article_ID = ''
@@ -155,9 +132,6 @@ def link_to_article_ID(link, article_dict):
         return(None)
     return(article_ID)
 
-
-# In[8]:
-
 def law_searcher(number, name, a_dict):
     ID = ''
     if name:
@@ -176,9 +150,6 @@ def law_searcher(number, name, a_dict):
                 break
     return(ID)
 
-
-# In[9]:
-
 def ID_to_Article(article_ID, article_list):
     a = Article()
     for art in article_list:
@@ -196,9 +167,6 @@ def ID_to_Article(article_ID, article_list):
             a.article_link = art['article_link']
             break
     return(a)
-
-
-# In[ ]:
 
 def link_to_article(link):
     article_list = load_data()
@@ -228,14 +196,3 @@ def link_to_article(link):
 # # print(article_ID)
 # # a = Article()
 # # a = ID_to_Article(article_ID, article_list)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
