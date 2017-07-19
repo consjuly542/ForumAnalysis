@@ -37,15 +37,16 @@
                         <div class="block-header">
                             <h4 class="card-title">
                                 <a href="{{item.article_link}}" target="_blank">
-                                    Статья {{ item.article_num }} "{{ item.article }}"
+                                    Статья {{ item['official_article'].article_num }} "{{ item['official_article'].article }}"
                                 </a>
                             </h4>
-                            <h6 class="card-subtitle mb-2 text-muted">{{ item.law }} от {{ item.date }} N{{item.law_num}}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article'].law }} от {{ item['official_article'].date }} N{{item['official_article'].law_num}}</h6>
                         </div>
                         <div class="card-text">
                             <div class="row">
-                                <div class="col-lg-3 col-md-4 col-sm-4"><u>Упоминаний:</u> 152</div>
-                                <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item.date }}</div>
+                                <div class="col-lg-3 col-md-4 col-sm-4"><u>Вопросов:</u> {{ item['questions_cnt'] }}</div>
+                                <div class="col-lg-3 col-md-4 col-sm-4"><u>Ответов:</u> {{ item['sum_answers_cnt'] }}</div>
+                                <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item['official_article'].date }}</div>
                             </div>
                             <hr/>
                             <div class="row">
