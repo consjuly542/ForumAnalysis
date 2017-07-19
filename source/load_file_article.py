@@ -24,6 +24,7 @@ def load_data():
 
         article_list.append(a)
 
+    f.close()
     return article_list
 
 if __name__ == '__main__':
