@@ -24,6 +24,9 @@ def fun():
 from app.module.StatisticsWeb import statistics_page
 app.register_blueprint(statistics_page, url_prefix='/statistics')
 
+from app.module.ArticlesWeb import articles_page
+app.register_blueprint(articles_page, url_prefix='/articles')
+
 # cd app
 # set PYTHONPATH=..
 # "C:\ProgramData\Anaconda3\python.exe" __init__.py

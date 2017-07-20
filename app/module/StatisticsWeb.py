@@ -1,8 +1,9 @@
 from definitions import ROOT_DIR
 import sys
 import os.path
-import json
 sys.path.append(os.path.join(ROOT_DIR, 'source/'))
+
+import json
 
 from source.StatisticsModule import StatisticsModule
 
