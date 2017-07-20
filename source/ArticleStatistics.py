@@ -8,7 +8,7 @@ class ArticleStatistics (object):
 	Class for Law Statistics
 	"""
 	def __init__(self, official_article):
-		#official law name - instance of class 
+		#official laquww name - instance of class 
 		self.official_article = official_article
 		#points from link with frequency: 
 		#dictionary: {point_num:frequency}
@@ -28,7 +28,7 @@ class ArticleStatistics (object):
 		if link.part_num:
 			if link.part_num not in self.parts_statistics:
 				self.parts_statistics[link.part_num] = 0
-			self.parts_statistics[link.part_num] +=1
+			self.parts_statistics[link.part_num] += 1
 
 		self.questions_cnt += 1
 		self.sum_answers_cnt += len(question.answers)
@@ -41,7 +41,7 @@ class ArticleStatistics (object):
 		if len(date_parts) == 1:
 			date_parts = question.date.strip().split(".")
 			
-		print (date_parts)
+		# print (date_parts)
 
 		q_date = date(int(date_parts[0]), \
 					 int(date_parts[1]), \

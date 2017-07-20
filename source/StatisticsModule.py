@@ -7,13 +7,22 @@ from ArticleStatistics import ArticleStatistics
 from links_searcher import *
 import pickle
 import operator
-from link_to_article import link_to_article
+# from link_to_article import link_to_article
 from functools import cmp_to_key
+import sys
+from link_to_article import Link2Article
+
+def write_current_article_list(articles_list, cnt_visible_article = 30):
+	with open("./../data/statistics/current_article_list", "wb") as f:
+		pickle.dump(articles_list[:cnt_visible_article], f, protocol=pickle.HIGHEST_PROTOCOL)
 
 # class StatisticsModule(Module):
 class StatisticsModule(object):
-	def __init__(self):
-		self.get_article_statistics(recompute_statistic = False)
+	def __run__(self, file_origin, file_target):
+		pass
+
+	def __init__(self, recompute_statistic = False):
+		self.get_article_statistics(recompute_statistic = recompute_statistic)
 		#list which users see
 		self.cur_articles_list = list(self.article_index.values())
 		#ranking list of articles wuthout filters - for fast execution
@@ -34,6 +43,7 @@ class StatisticsModule(object):
 		Create dictionary {article:article_statistics}
 		"""
 		articles = load_file_article.load_data()
+		print ("Count official articles: %d" % len(articles))
 		self.article_index = {a.article_ID:ArticleStatistics(a) for a in articles}
 
 		with open("./../data/statistics/article_index", "wb") as f:
@@ -43,21 +53,36 @@ class StatisticsModule(object):
 		if recompute_statistic:
 			self.get_article_index()
 			data_generator = loadDataGenerator()
+			cnt_not_match_links = 0
+			links_cnt = 0
+			l2a = Link2Article()
+			# log = open("./logs", "w")
+			# error_link = []
 			for question_batch in data_generator:
 				for question in question_batch:
 
 					links = LinksSearcher(question.get_all_text()).get_simple_links()
-					# if len(all_links) > 50:
-					# 	with open("./../data/statistics/links_example", "wb") as f:
-					# 		pickle.dump(all_links, f, protocol=pickle.HIGHEST_PROTOCOL)
-					# 	return
 					for link in links:
 						# function from Alexandrina
-						article = link_to_article(link)
-						print (article)
+						article = l2a.link2article(link)
+						# print (article)
 						if article:
-							print (article.article_ID)
+							# print (article.article_ID)
+							links_cnt += 1
 							self.article_index[article.article_ID].add_question(question, link)
+						else:
+							cnt_not_match_links += 1
+							# log.write(link.link_text + '\n')
+							# log.flush()
+							# error_link.append(link)
+							# print( link.to_dict())
+							# if cnt_not_match_links > 20:
+							# 	print ("I AM HERE")
+							# 	with open("./error_link", "wb") as f:
+							# 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
+							# 	return 
+
+					sys.stderr.write("\r\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
 			with open("./../data/statistics/article_statistics", "wb") as f:
 				pickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -71,25 +96,29 @@ class StatisticsModule(object):
 									key = operator.attrgetter('questions_cnt'), reverse = True)
 			self.articles_list_all = sorted(self.article_index.values(), \
 									key = operator.attrgetter('questions_cnt'), reverse = True)
-		elif rank_type == 'by_mean_cnt_questions':
-			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('cur_mean_answers'), reverse=True)
-			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('cur_mean_answers'), reverse=True)
+		elif rank_type == 'by_sum_cnt_answers':
+			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'), reverse=True)
+			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('sum_answers_cnt'), reverse=True)
 		elif rank_type == 'by_date':
 			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), inverse=True)
-			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('cur_mean_answers'), inverse=True)
+			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('last_date'), inverse=True)
 
 		self.is_ranked = True
 		self.rank_type = rank_type
 
-		with open("./../data/statistics/current_article_list", "wb") as f:
-			pickle.dump(self.cur_articles_list, f, protocol=pickle.HIGHEST_PROTOCOL)
+		write_current_article_list(self.cur_articles_list)
+		# with open("./../data/statistics/current_article_list", "wb") as f:
+		# 	pickle.dump(self.cur_articles_list, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 	# def add_filter(self, filter_type, filter_data):
 	# 	"""
 	# 	add filter by data or law
-	# 	if filter by data: filter_data is string: "year.month.day"
-	# 	if filter by law: filter_data - law name (ex. Гражданский кодекс) - 
+	# 	filter_type = 'law' or 'date'
+	# 	фильтр по дате - оставляю только те статьи, 
+	# 	упоминание о котором есть позднее указанного числа
+	# 	if filter by date: filter_data is string: "year.month.day"
+	# 	if filter by law: filter_data - law name (ex. "Гражданский кодекс") - 
 	# 	-здесь скорее всего должен быть выпадающий список
 	# 	"""
 	# 	if filter_type in self.filters:
@@ -107,7 +136,7 @@ class StatisticsModule(object):
 
 
 
-index = StatisticsModule()
+# index = StatisticsModule(recompute_statistic=True)
 # print(len(index.article_index))
 # # for idx, k in enumerate(index.article_index.keys()):
 # # 	if idx > 2:
@@ -118,6 +147,6 @@ with open("./../data/statistics/current_article_list", "rb") as f:
 	articles = pickle.load(f)
 
 	for idx, k in enumerate(articles):
-		if idx > 11:
+		if idx > 1:
 			break
-		print (k.to_dict())
+		print (k.to_dict()['questions_cnt'])
