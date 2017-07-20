@@ -3,7 +3,7 @@
 
 from processedDataLoader import loadDataGenerator
 import load_file_article
-from ArticleStatistics import ArticleStatistics
+from ArticleStatistics import ArticleStatistics, get_questions
 from links_searcher import *
 import _pickle as cPickle
 import pickle
@@ -25,9 +25,9 @@ def data2dict(s_data):
         data[i].first_date = convert_date(data[i].first_date)
         data[i].official_article.date = convert_date(data[i].official_article.date)
         data[i].official_article.edit_date = convert_date(data[i].official_article.edit_date)
-        for j, dt in enumerate(data[i].questions):
-            data[i].questions[j].date = convert_date(dt.date)
-            data[i].questions[j] = dt.__dict__
+        # for j, dt in enumerate(data[i].questions):
+        #     data[i].questions[j].date = convert_date(dt.date)
+        #     data[i].questions[j] = dt.__dict__
         data[i].official_article = d.official_article.__dict__
         data[i] = d.__dict__
     return data
@@ -179,12 +179,12 @@ class StatisticsModule(object):
         if filter by law: filter_data - law name (ex. "Гражданский кодекс") -
         -здесь скорее всего должен быть выпадающий список
         """
-        if filter_type in self.filters:
+        if filter_type in self.filters_type:
             pass
         else:
             if filter_type == 'law':
                 self.cur_articles_list = [article for article in self.cur_articles_list \
-                                          if a.official_article.law.strip().lower() == filters_data.strip().lower()]
+          					if article.official_article.law.strip().lower() == filter_data.strip().lower()]
 
             if filter_type == 'date':
                 date_parts = filter_data.strip().split("-")
@@ -193,7 +193,7 @@ class StatisticsModule(object):
                                    int(date_parts[0]))
 
                 self.cur_articles_list = [article for article in self.cur_articles_list \
-                                          if a.last_date >= filters_date]
+                                          if article.last_date >= filter_date]
 
             self.filters_type.append(filter_type)
             self.filters_data.append(filter_data)
@@ -210,19 +210,23 @@ class StatisticsModule(object):
 
         write_current_article_list(self.cur_articles_list)
 
-index = StatisticsModule(recompute_statistics = False)
-index.ranking_articles(rank_type='by_date')
+# index = StatisticsModule(recompute_statistics = False)
+# index.add_filter(filter_type='law', filter_data = 'гражданский кодекс')
 
-# print(len(index.article_index))
-# # for idx, k in enumerate(index.article_index.keys()):
-# # 	if idx > 2:
-# # 		break
-# # 	print (k.to_dict())
+# # print(len(index.article_index))
+# # # for idx, k in enumerate(index.article_index.keys()):
+# # # 	if idx > 2:
+# # # 		break
+# # # 	print (k.to_dict())
 
-with open("./../data/statistics/current_article_list", "rb") as f:
-	articles = pickle.load(f)
+# with open("./../data/statistics/current_article_list", "rb") as f:
+# 	articles = pickle.load(f)
 
-	for idx, k in enumerate(articles):
-		if idx > 1:
-			break
-		print (k['last_date'])
+# 	for idx, k in enumerate(articles):
+# 		if idx > 1:
+# 			break
+
+# 		print (k['official_article']['law'])
+
+		# print (k['questions_cnt'], len(get_questions(k['questions_filename'])), \
+		# 	get_questions(k['questions_filename'])[0])

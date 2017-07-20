@@ -4,6 +4,18 @@ from Question import Question
 from datetime import date
 import _pickle as cPickle
 import pickle
+from copy import deepcopy as copy
+import re
+
+def convert_date(dt):
+    if not isinstance(dt, str):
+        dt = str(dt)
+    parts = re.split(r'\.|\_|\-', dt)
+    if len(parts) == 1:
+        parts = str(dt).split('.')
+    if len(parts[0]) == 4:
+        return '.'.join(reversed(parts))
+    return str(dt)
 
 class ArticleStatistics (object):
 	"""
@@ -21,6 +33,8 @@ class ArticleStatistics (object):
 		#filename for quetions
 		self.questions_filename = "../data/statistics/article_questions/" + \
 						self.official_article.article_ID
+		with open(self.questions_filename, "wb") as f:
+			pass
 		self.dates = []
 		self.first_date = None
 		self.last_date = None
@@ -40,7 +54,9 @@ class ArticleStatistics (object):
 		self.cur_mean_answers = float(self.sum_answers_cnt) / self.questions_cnt
 
 		with open(self.questions_filename, "ab") as f:
-			cPickle.dump(question, f, protocol=pickle.HIGHEST_PROTOCOL)
+			tmp = copy(question)
+			tmp.date = convert_date(question.date)
+			cPickle.dump(tmp.to_dict(), f, protocol=pickle.HIGHEST_PROTOCOL)
 
 		date_parts = question.date.strip().split("_")
 		if len(date_parts) == 1:
@@ -58,9 +74,23 @@ class ArticleStatistics (object):
 		if (self.last_date and self.last_date < q_date) or (self.last_date is None):
 			self.last_date = q_date
 
+
 	def to_dict(self):
 		return self.__dict__
 
+
+def get_questions(questions_filename):
+	"""
+	Get list of questions dict from file
+	"""
+	questions_list = []
+	with open(questions_filename, "rb") as f:
+		while True:
+			try:
+				questions_list.append(pickle.load(f))
+			except:
+				break
+	return questions_list
 
 
 
