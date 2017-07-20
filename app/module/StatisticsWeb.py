@@ -34,7 +34,7 @@ def get_view():
 
 
 @statistics_page.route('/rank/', defaults={'rank_by': 'by_cnt_questions', 'filters': []})
-@statistics_page.route('/rank/<rank_by>/filters/<filters>', methods=['GET'])
+@statistics_page.route('/rank/<rank_by>', methods=['GET'])
 def rank(rank_by):
     stats_module.ranking_articles(rank_type=rank_by)
     data = get_data()
