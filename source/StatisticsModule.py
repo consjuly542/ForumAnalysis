@@ -62,7 +62,7 @@ class StatisticsModule(object):
         self.cur_articles_list = [a for a in self.cur_articles_list if a.questions_cnt > 0]
         # ranking list of articles without filters - for fast execution
         self.articles_list_all = list(self.article_index.values())
-        self.articles_list_all = copy(self.cur_articles_list)
+        self.articles_list_all = [a for a in self.articles_list_all if a.questions_cnt > 0]
 
         self.is_ranked = False
         self.is_filtered = False
@@ -130,18 +130,24 @@ class StatisticsModule(object):
         if rank_type == 'by_cnt_questions':
             self.cur_articles_list = sorted(self.cur_articles_list, \
                                             key=operator.attrgetter('questions_cnt'), reverse=True)
-            self.articles_list_all = sorted(self.article_index.values(), \
+            self.articles_list_all = sorted(self.articles_list_all, \
                                             key=operator.attrgetter('questions_cnt'), reverse=True)
         elif rank_type == 'by_sum_cnt_answers':
             self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'),
                                             reverse=True)
-            self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('sum_answers_cnt'),
+            self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('sum_answers_cnt'),
                                             reverse=True)
         elif rank_type == 'by_date':
             # for i, d in enumerate(self.cur_articles_list):
             #     print(self.cur_articles_list[i].last_date, end=" ")
             #     self.cur_articles_list[i].last_date = str(d.last_date)
             #     print(self.cur_articles_list[i].last_date)
+            for i, d in enumerate(self.cur_articles_list):
+            	if d.last_date is None:
+            		print ("1 NONE")
+            for i, d in enumerate(self.articles_list_all):
+            	if d.last_date is None:
+            		print ("2 NONE")
             self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), reverse=True)
             self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('last_date'), reverse=True)
             # print()
@@ -204,17 +210,19 @@ class StatisticsModule(object):
 
         write_current_article_list(self.cur_articles_list)
 
-index = StatisticsModule(recompute_statistics = True)
+index = StatisticsModule(recompute_statistics = False)
+index.ranking_articles(rank_type='by_date')
+
 # print(len(index.article_index))
 # # for idx, k in enumerate(index.article_index.keys()):
 # # 	if idx > 2:
 # # 		break
 # # 	print (k.to_dict())
 
-# with open("./../data/statistics/current_article_list", "rb") as f:
-# 	articles = pickle.load(f)
+with open("./../data/statistics/current_article_list", "rb") as f:
+	articles = pickle.load(f)
 
-# 	for idx, k in enumerate(articles):
-# 		if idx > 1:
-# 			break
-# 		print (k.to_dict()['questions_cnt'])
+	for idx, k in enumerate(articles):
+		if idx > 1:
+			break
+		print (k['last_date'])
