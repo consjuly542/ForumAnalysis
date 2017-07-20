@@ -30,6 +30,12 @@ def load_codex_list():
         codex_list = pickle.load(f_in)
     return codex_list
 
+def load_art_questions(article_id):
+    data = None
+    with open(os.path.join(ROOT_DIR, 'data/statistics/article_questions/' + article_id), 'rb') as f_in:
+        data = pickle.load(f_in)
+    return data
+
 @statistics_page.route('/', methods=['GET', 'POST'])
 def get_view():
     # data:
@@ -48,7 +54,10 @@ def get_view():
             for filt in r_filters:
                 stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
         data = get_data()
-        return render_template('Statistics/articles_data.html',data=data)
+        try:
+            return render_template('Statistics/articles_data.html',data=data)
+        except TemplateNotFound:
+            abort(404)
     else:
         stats_module.ranking_articles()
         stats_module.cancel_filter('law')
@@ -63,14 +72,23 @@ def get_view():
         except TemplateNotFound:
             abort(404)
 
-
-@statistics_page.route('/rank/', defaults={'rank_by': 'by_cnt_questions', 'filters': []})
-@statistics_page.route('/rank/<rank_by>', methods=['GET'])
-def rank(rank_by):
-    stats_module.ranking_articles(rank_type=rank_by)
-    data = get_data()
-    codex_list = load_codex_list()
+@statistics_page.route('/<article_id>/questions')
+def art_questions(article_id):
+    data = load_art_questions(article_id)
+    # TODO: REMOVE WHEN data is actually an array
+    data = [data]
     try:
-        return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank=rank_by)
+        return render_template('Statistics/article_questions.html', data=data)
     except TemplateNotFound:
         abort(404)
+
+# @statistics_page.route('/rank/', defaults={'rank_by': 'by_cnt_questions', 'filters': []})
+# @statistics_page.route('/rank/<rank_by>', methods=['GET'])
+# def rank(rank_by):
+#     stats_module.ranking_articles(rank_type=rank_by)
+#     data = get_data()
+#     codex_list = load_codex_list()
+#     try:
+#         return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank=rank_by)
+#     except TemplateNotFound:
+#         abort(404)
