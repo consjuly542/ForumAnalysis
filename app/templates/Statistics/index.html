@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block head_custom %}
 <link href="{{ url_for('static', filename='lib/datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
-<script src="{{ url_for('static', filename='lib/datepicker/js/bootstrap-datepicker.min.js') }}" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='lib/datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='lib/datepicker/locales/bootstrap-datepicker.ru.min.js') }}"></script>
 {% endblock %}
 {% block content %}
 <div class="row">
@@ -10,10 +11,24 @@
             <form>
                 <div class="form-group">
                     <div class="row">
+                        <label for="rank_by" class="col-sm-4 col-form-label">Сортировка</label>
+                        <div class="col-sm-12">
+                            <select class="form-control" id="rank_by">
+                                <option value="{{url_for('statistics_page.get_view')}}" {% if rank=='by_cnt_questions' %}selected{% endif %}>По кол-ву вопросов</option>
+                                <option value="{{url_for('statistics_page.rank', rank_by='by_date')}}" {% if rank=='by_date' %}selected{% endif %}>По дате</option>
+                                <option value="{{url_for('statistics_page.rank', rank_by='by_sum_cnt_answers')}}" {% if rank=='by_sum_cnt_answers' %}selected{% endif %}>По кол-ву ответов</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form>
+                <div class="form-group">
+                    <div class="row">
                         <label for="filter_codex" class="col-sm-4 col-form-label">Кодекс</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-12">
                             <select class="form-control" id="filter_codex">
-                                <option>-</option>
+                                <option selected>-</option>
                                 <option>Гражданский кодекс</option>
                                 <option>Административный кодекс</option>
                                 <option>Градостроительный кодекс</option>
@@ -40,13 +55,13 @@
                                 Статья {{ item['official_article']['article_num'] }} "{{ item['official_article']['article'] }}" <i class="cons-link"><a href="{{item['official_article']['article_link']}}" target="_blank">(ссылка)</a></i>
                             </h4>
                             <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article']['law'] }} от {{ item['official_article']['date'] }} N{{item['official_article']['law_num']}}</h6>
-                        </div>
-                        <div class="card-text">
                             <div class="row">
                                 <div class="col-lg-3 col-md-4 col-sm-4"><u>Вопросов:</u> {{ item['questions_cnt'] }}</div>
                                 <div class="col-lg-3 col-md-4 col-sm-4"><u>Ответов:</u> {{ item['sum_answers_cnt'] }}</div>
                                 <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item['last_date'] }}</div>
                             </div>
+                        </div>
+                        <div class="card-text">
                             <hr/>
                             <div class="row">
                                 <div class="col-lg-12">
@@ -88,13 +103,37 @@
             $(this).find('.item-question').slice(0, 3).show();
         });
         $('#datepicker').datepicker({
-            todayHighlight: true
+            todayHighlight: true,
+            language: "ru-RU"
+        });
+        // reload select values (they reset when using Back button in browser)
+        $("select").each(function () {
+            $(this).val($(this).find('option[selected]').val());
         });
     });
     $('.article-stats .card-block .block-header').bind('click', function() {
-        var card_block = $(this).closest('.card-block');
-        var card_text = $(card_block).find('.card-text');
+        var stats_block = $(this).closest('.article-stats');
+        var card_text = $(stats_block).find('.card-text');
+        // if active then remove active
+        if ($(stats_block).hasClass('active')) {
+            $(stats_block).removeClass('active');
+        } else { // if not active
+            // Mark as active
+            $(stats_block).addClass('active');
+            // Collapse everything else
+            $(document).find('.article-stats').not('active').each(function() {
+                $(this).find('.card-text').hide();
+            });
+            // Animate to active article
+            $('html, body').animate({
+                scrollTop: $(stats_block).offset().top
+            }, 500);
+        }
+        // Toggle full info about current article
         $(card_text).slideToggle(500);
+    });
+    $('.cons-link').bind('click', function(evt) {
+        evt.stopPropagation();
     });
     $('.toggle-questions').bind('click', function() {
         var question_list = $(this).closest('.question-list');
@@ -106,6 +145,9 @@
             $(question_list).find('.item-question').slice(3).hide();
             $(this).text('Смотреть все');
         }
+    });
+    $('#rank_by').bind('change', function() {
+        window.location.href = $(this).val()
     });
 </script>
 {% endblock %}

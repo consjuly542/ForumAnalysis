@@ -6,6 +6,19 @@ from links_searcher import Link
 import pickle
 from Article import Article
 
+class Link2Article(object):
+    def __init__(self):
+        self.article_list = load_data()
+        self.article_dict = list_to_dict(self.article_list)
+
+    def link2article(self, link):
+        article_ID = link_to_article_ID(link, self.article_dict)
+        if article_ID == None:
+            return None
+        a = Article()
+        a = ID_to_Article(article_ID, self.article_list)
+        return(a)
+
 def load_data():
     f = open('../data/article_list_laws.txt', 'r')
     article_list = []
@@ -150,15 +163,15 @@ def ID_to_Article(article_ID, article_list):
             break
     return(a)
 
-def link_to_article(link):
-    article_list = load_data()
-    article_dict = list_to_dict(article_list)
-    article_ID = link_to_article_ID(link, article_dict)
-    if article_ID is None:
-        return None
-    a = Article()
-    a = ID_to_Article(article_ID, article_list)
+# def link_to_article(link):
+#     article_list = load_data()
+#     article_dict = list_to_dict(article_list)
+#     article_ID = link_to_article_ID(link, article_dict)
+#     if article_ID is None:
+#         return None
+#     a = Article()
+#     a = ID_to_Article(article_ID, article_list)
     
-    return(a)
+#     return(a)
 
 

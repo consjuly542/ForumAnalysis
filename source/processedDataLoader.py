@@ -3,6 +3,8 @@ from Question import QuestionKlerk
 
 import json
 import os
+import sys
+import glob
 
 
 def load_data(dirpath='./data/processed'):
@@ -37,10 +39,19 @@ def load_data(dirpath='./data/processed'):
 def loadDataGenerator(dirpath = '../data/processed'):
     listdir = os.listdir(dirpath)
     cur_file = 0
-    batch_size = 10
+    batch_size = 1
+    if "klerk" in listdir:
+        listdir.remove("klerk")
+    klerk_file = glob.glob('../data/processed/klerk/**/*.txt', recursive=True)
+    # print (len(klerk_file))
+    listdir += klerk_file
+    listdir = listdir
     while cur_file < len(listdir):
+        sys.stderr.write("\rPrepare %d / %d files, cur_file: %s" % \
+            (cur_file, len(listdir), listdir[cur_file]))
         question_list = []
         for filename in listdir[cur_file:cur_file + batch_size]:
+            # sys.stderr.write("\n\rfilename %s" % (filename))
             filepath = os.path.join(dirpath, filename)
             with open(filepath) as input_file:
                 data = json.load(input_file)
