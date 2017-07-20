@@ -136,17 +136,17 @@ class StatisticsModule(object):
 
 
 
-# index = StatisticsModule(recompute_statistic=True)
+index = StatisticsModule(recompute_statistic=True)
 # print(len(index.article_index))
 # # for idx, k in enumerate(index.article_index.keys()):
 # # 	if idx > 2:
 # # 		break
 # # 	print (k.to_dict())
 
-with open("./../data/statistics/current_article_list", "rb") as f:
-	articles = pickle.load(f)
+# with open("./../data/statistics/current_article_list", "rb") as f:
+# 	articles = pickle.load(f)
 
-	for idx, k in enumerate(articles):
-		if idx > 1:
-			break
-		print (k.to_dict()['questions_cnt'])
+# 	for idx, k in enumerate(articles):
+# 		if idx > 1:
+# 			break
+# 		print (k.to_dict()['questions_cnt'])

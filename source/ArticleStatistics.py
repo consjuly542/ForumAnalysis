@@ -35,7 +35,8 @@ class ArticleStatistics (object):
 
 		self.cur_mean_answers = float(self.sum_answers_cnt) / self.questions_cnt
 
-		self.questions.append(question)
+		if len(self.questions) < 50:
+			self.questions.append(question)
 
 		date_parts = question.date.strip().split("_")
 		if len(date_parts) == 1:
