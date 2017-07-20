@@ -1,3 +1,5 @@
+'''Script for 9111 forum data parsing'''
+
 # -*- coding: utf-8 -*-
 import codecs
 from lxml import html, etree
@@ -20,9 +22,22 @@ import argparse
 from Question import Question9111
 
 def time_str():
+    ''' Returns a datetime string '''
     return ('%s' % datetime.now().replace(microsecond=0)).replace(' ','_')
 
 def make_question_card(text):
+    '''
+	
+	Makes question from text
+	
+	Parameters
+	------------
+	*text (string): text from file
+	
+	Returns
+	------------
+	*q  (Question9111()):  question from text 
+	'''
     trantab = str.maketrans(dict.fromkeys('\n\r\t'))
 
     tree = html.fromstring(text)
@@ -78,6 +93,7 @@ def make_question_card(text):
     return q
 
 def main():
+    ''' Main function '''
     parser = argparse.ArgumentParser()
     parser.add_argument('num', type=int, default=None)
     args = parser.parse_args()
