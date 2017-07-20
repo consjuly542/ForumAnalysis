@@ -8,7 +8,7 @@
 <div class="row">
     <div class="col-lg-3 col-md-12 filters">
         <div class="filters-inner affix">
-            <form>
+            <form id="rank_and_filters">
                 <div class="form-group">
                     <div class="row">
                         <label for="rank_by" class="col-sm-4 col-form-label">Сортировка</label>
@@ -21,17 +21,15 @@
                         </div>
                     </div>
                 </div>
-            </form>
-            <form>
                 <div class="form-group">
                     <div class="row">
                         <label for="filter_codex" class="col-sm-4 col-form-label">Кодекс</label>
                         <div class="col-sm-12">
                             <select class="form-control" id="filter_codex">
                                 <option selected>-</option>
-                                <option>Гражданский кодекс</option>
-                                <option>Административный кодекс</option>
-                                <option>Градостроительный кодекс</option>
+                                {% for codex in codex_list %}
+                                <option>{{codex}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -148,6 +146,14 @@
     });
     $('#rank_by').bind('change', function() {
         window.location.href = $(this).val()
+    });
+
+    $('#filter_codex').bind('change', function() {
+        $('#rank_and_filters').trigger('submit');
+    });
+    $('#rank_and_filters').bind('submit', function(evt) {
+        alert('form update');
+        evt.preventDefault();
     });
 </script>
 {% endblock %}

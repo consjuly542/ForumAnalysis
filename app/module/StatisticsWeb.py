@@ -9,7 +9,7 @@ from source.ArticleStatistics import ArticleStatistics
 
 import re
 import _pickle as pickle
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, request
 from jinja2 import TemplateNotFound
 
 statistics_page = Blueprint('statistics_page', __name__,
@@ -23,12 +23,19 @@ def get_data():
         data = pickle.load(f_in)
     return data
 
+def load_codex_list():
+    codex_list = None
+    with open(os.path.join(ROOT_DIR, 'data/res/codex_list'), 'rb') as f_in:
+        codex_list = pickle.load(f_in)
+    return codex_list
+
 @statistics_page.route('/')
 def get_view():
     stats_module.ranking_articles(rank_type='by_cnt_questions')
     data = get_data()
+    codex_list = load_codex_list()
     try:
-        return render_template('Statistics/index.html', data=data, rank='by_cnt_questions')
+        return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank='by_cnt_questions')
     except TemplateNotFound:
         abort(404)
 
@@ -38,7 +45,18 @@ def get_view():
 def rank(rank_by):
     stats_module.ranking_articles(rank_type=rank_by)
     data = get_data()
+    codex_list = load_codex_list()
     try:
-        return render_template('Statistics/index.html', data=data, rank=rank_by)
+        return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank=rank_by)
+    except TemplateNotFound:
+        abort(404)
+
+@statistics_page.route('/test', methods=['GET', 'POST'])
+def test():
+    req_data = request.get_json()
+    stats_module.ranking_articles(rank_type='by_cnt_questions')
+    data = get_data()
+    try:
+        return render_template('Statistics/index.html', data=data, rank='by_cnt_questions', filters=filters)
     except TemplateNotFound:
         abort(404)
