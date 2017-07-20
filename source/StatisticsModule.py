@@ -12,6 +12,7 @@ import operator
 from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
+from datetime import date
 
 def data2dict(data):
     for i, d in enumerate(data):
@@ -48,8 +49,8 @@ class StatisticsModule(object):
 	def __run__(self, file_origin, file_target):
 		pass
 
-	def __init__(self, recompute_statistic = False):
-		self.get_article_statistics(recompute_statistic = recompute_statistic)
+	def __init__(self, recompute_statistics = False):
+		self.get_article_statistics(recompute_statistics = recompute_statistics)
 		#list which users see
 		self.cur_articles_list = list(self.article_index.values())
 		#ranking list of articles wuthout filters - for fast execution
@@ -76,8 +77,8 @@ class StatisticsModule(object):
 		with open("./../data/statistics/article_index", "wb") as f:
 			cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
 		
-	def get_article_statistics(self, recompute_statistic=True):
-		if recompute_statistic:
+	def get_article_statistics(self, recompute_statistics=True):
+		if recompute_statistics:
 			self.get_article_index()
 			data_generator = loadDataGenerator()
 			cnt_not_match_links = 0
@@ -138,32 +139,51 @@ class StatisticsModule(object):
 		# 	pickle.dump(self.cur_articles_list, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-	# def add_filter(self, filter_type, filter_data):
-	# 	"""
-	# 	add filter by data or law
-	# 	filter_type = 'law' or 'date'
-	# 	фильтр по дате - оставляю только те статьи, 
-	# 	упоминание о котором есть позднее указанного числа
-	# 	if filter by date: filter_data is string: "year.month.day"
-	# 	if filter by law: filter_data - law name (ex. "Гражданский кодекс") - 
-	# 	-здесь скорее всего должен быть выпадающий список
-	# 	"""
-	# 	if filter_type in self.filters:
-	# 		pass
-	# 	else:
-	# 		self.cur_articles_list = [article for art]
+	def add_filter(self, filter_type, filter_data):
+		"""
+		add filter by data or law
+		filter_type = 'law' or 'date'
+		date = "day-month-year"
+		фильтр по дате - оставляю только те статьи, 
+		упоминание о котором есть позднее указанного числа
+		if filter by date: filter_data is string: "year.month.day"
+		if filter by law: filter_data - law name (ex. "Гражданский кодекс") - 
+		-здесь скорее всего должен быть выпадающий список
+		"""
+		if filter_type in self.filters:
+			pass
+		else:
+			if filter_type == 'law':
+				self.cur_articles_list = [article for article in self.cur_articles_list \
+					if a.official_article.law.strip().lower() == filters_data.strip().lower()]
 
-	# def cancel_filter(self, filter_type):
-	# 	self.filters_data.pop(self.filters_type.index(filter_type))
-	# 	self.filters_type.remove(filter_type)
+			if filter_type == 'date':
+				date_parts = filter_data.strip().split("-")
+				filter_date = date(int(date_parts[2]), \
+					 				int(date_parts[1]), \
+					 				int(date_parts[0]))
 
-	# 	self.cur_articles_list = self.articles_list_all.copy()
-	# 	for i, f in enumerate(self.filters_type):
-	# 		self.add_filter(filter_type = f)
+				self.cur_articles_list = [article for article in self.cur_articles_list \
+					if a.last_date >= filters_date]
+				
+			self.filters_type.append(filter_type)
+			self.filters_data.append(filter_data)
+
+			write_current_article_list(self.cur_articles_list)
+
+	def cancel_filter(self, filter_type):
+		self.filters_data.pop(self.filters_type.index(filter_type))
+		self.filters_type.remove(filter_type)
+
+		self.cur_articles_list = self.articles_list_all.copy()
+		for i, f in enumerate(self.filters_type):
+			self.add_filter(filter_type = f, filter_data = self.filters_data[i])
+
+		write_current_article_list(self.cur_articles_list)
 
 
 
-index = StatisticsModule(recompute_statistic=True)
+index = StatisticsModule()
 # print(len(index.article_index))
 # # for idx, k in enumerate(index.article_index.keys()):
 # # 	if idx > 2:
