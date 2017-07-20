@@ -8,13 +8,16 @@ from links_searcher import *
 import _pickle as cPickle
 import pickle
 import operator
+from copy import deepcopy as copy
 # from link_to_article import link_to_article
 from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 from datetime import date
 
-def data2dict(data):
+
+def data2dict(s_data):
+    data = copy(s_data)
     for i, d in enumerate(data):
         for j, dt in enumerate(data[i].dates):
             data[i].dates[j] = convert_date(dt)
@@ -29,6 +32,7 @@ def data2dict(data):
         data[i] = d.__dict__
     return data
 
+
 def convert_date(dt):
     if not isinstance(dt, str):
         dt = str(dt)
@@ -39,148 +43,166 @@ def convert_date(dt):
         return '.'.join(reversed(parts))
     return str(dt)
 
-def write_current_article_list(articles_list, cnt_visible_article = 30):
-	with open("./../data/statistics/current_article_list", "wb") as f:
-		article_dict = data2dict(articles_list[:cnt_visible_article])
-		cPickle.dump(article_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+def write_current_article_list(articles_list, cnt_visible_article=30):
+    with open("./../data/statistics/current_article_list", "wb") as f:
+        article_dict = data2dict(copy(articles_list)[:cnt_visible_article])
+        cPickle.dump(article_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
+
 
 # class StatisticsModule(Module):
 class StatisticsModule(object):
-	def __run__(self, file_origin, file_target):
-		pass
+    def __run__(self, file_origin, file_target):
+        pass
 
-	def __init__(self, recompute_statistics = False):
-		self.get_article_statistics(recompute_statistics = recompute_statistics)
-		#list which users see
-		self.cur_articles_list = list(self.article_index.values())
-		#ranking list of articles wuthout filters - for fast execution
-		self.articles_list_all = list(self.article_index.values())
+    def __init__(self, recompute_statistics=False):
+        self.get_article_statistics(recompute_statistics=recompute_statistics)
+        # list which users see
+        self.cur_articles_list = list(self.article_index.values())
+        self.cur_articles_list = [a for a in self.cur_articles_list if a.questions_cnt > 0]
+        # ranking list of articles without filters - for fast execution
+        self.articles_list_all = list(self.article_index.values())
+        self.articles_list_all = copy(self.cur_articles_list)
 
-		self.is_ranked = False
-		self.is_filtered = False
-		self.rank_type = None
-		#filters list
-		self.filters_type = []
-		self.filters_data = []
+        self.is_ranked = False
+        self.is_filtered = False
+        self.rank_type = None
+        # filters list
+        self.filters_type = []
+        self.filters_data = []
 
-		#default - ranked by cnt_questions, no filters
-		self.ranking_articles(rank_type = 'by_cnt_questions')
+        # default - ranked by cnt_questions, no filters
+        self.ranking_articles(rank_type='by_cnt_questions')
 
-	def get_article_index(self):
-		"""
-		Create dictionary {article:article_statistics}
-		"""
-		articles = load_file_article.load_data()
-		print ("Count official articles: %d" % len(articles))
-		self.article_index = {a.article_ID:ArticleStatistics(a) for a in articles}
+    def get_article_index(self):
+        """
+        Create dictionary {article:article_statistics}
+        """
+        articles = load_file_article.load_data()
+        print ("Count official articles: %d" % len(articles))
+        self.article_index = {a.article_ID: ArticleStatistics(a) for a in articles}
 
-		with open("./../data/statistics/article_index", "wb") as f:
-			cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
-		
-	def get_article_statistics(self, recompute_statistics=True):
-		if recompute_statistics:
-			self.get_article_index()
-			data_generator = loadDataGenerator()
-			cnt_not_match_links = 0
-			links_cnt = 0
-			l2a = Link2Article()
-			# log = open("./logs", "w")
-			# error_link = []
-			for question_batch in data_generator:
-				for question in question_batch:
+        with open("./../data/statistics/article_index", "wb") as f:
+            cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-					links = LinksSearcher(question.get_all_text()).get_simple_links()
-					for link in links:
-						# function from Alexandrina
-						article = l2a.link2article(link)
-						# print (article)
-						if article:
-							# print (article.article_ID)
-							links_cnt += 1
-							self.article_index[article.article_ID].add_question(question, link)
-						else:
-							cnt_not_match_links += 1
-							# log.write(link.link_text + '\n')
-							# log.flush()
-							# error_link.append(link)
-							# print( link.to_dict())
-							# if cnt_not_match_links > 20:
-							# 	with open("./error_link", "wb") as f:
-							# 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
-							# 	return 
+    def get_article_statistics(self, recompute_statistics=True):
+        if recompute_statistics:
+            self.get_article_index()
+            data_generator = loadDataGenerator()
+            cnt_not_match_links = 0
+            links_cnt = 0
+            l2a = Link2Article()
+            # log = open("./logs", "w")
+            # error_link = []
+            for question_batch in data_generator:
+                for question in question_batch:
 
-					sys.stderr.write("\r\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
+                    links = LinksSearcher(question.get_all_text()).get_simple_links()
+                    for link in links:
+                        # function from Alexandrina
+                        article = l2a.link2article(link)
+                        # print (article)
+                        if article:
+                            # print (article.article_ID)
+                            links_cnt += 1
+                            self.article_index[article.article_ID].add_question(question, link)
+                        else:
+                            cnt_not_match_links += 1
+                        # log.write(link.link_text + '\n')
+                        # log.flush()
+                        # error_link.append(link)
+                        # print( link.to_dict())
+                        # if cnt_not_match_links > 20:
+                        # 	print ("I AM HERE")
+                        # 	with open("./error_link", "wb") as f:
+                        # 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
+                        # 	return
 
-			with open("./../data/statistics/article_statistics", "wb") as f:
-				cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
-		else:
-			with open("./../data/statistics/article_statistics", "rb") as f:
-				self.article_index = cPickle.load(f)
+                    sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
-	def ranking_articles(self, rank_type = 'by_cnt_questions'):
-		if rank_type == 'by_cnt_questions':
-			self.cur_articles_list = sorted(self.cur_articles_list, \
-									key = operator.attrgetter('questions_cnt'), reverse = True)
-			self.articles_list_all = sorted(self.article_index.values(), \
-									key = operator.attrgetter('questions_cnt'), reverse = True)
-		elif rank_type == 'by_sum_cnt_answers':
-			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'), reverse=True)
-			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('sum_answers_cnt'), reverse=True)
-		elif rank_type == 'by_date':
-			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), reverse=True)
-			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('last_date'), reverse=True)
+            with open("./../data/statistics/article_statistics", "wb") as f:
+                cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
+        else:
+            with open("./../data/statistics/article_statistics", "rb") as f:
+                self.article_index = cPickle.load(f)
 
-		self.is_ranked = True
-		self.rank_type = rank_type
+    def ranking_articles(self, rank_type='by_cnt_questions'):
+        if rank_type == 'by_cnt_questions':
+            self.cur_articles_list = sorted(self.cur_articles_list, \
+                                            key=operator.attrgetter('questions_cnt'), reverse=True)
+            self.articles_list_all = sorted(self.article_index.values(), \
+                                            key=operator.attrgetter('questions_cnt'), reverse=True)
+        elif rank_type == 'by_sum_cnt_answers':
+            self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'),
+                                            reverse=True)
+            self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('sum_answers_cnt'),
+                                            reverse=True)
+        elif rank_type == 'by_date':
+            # for i, d in enumerate(self.cur_articles_list):
+            #     print(self.cur_articles_list[i].last_date, end=" ")
+            #     self.cur_articles_list[i].last_date = str(d.last_date)
+            #     print(self.cur_articles_list[i].last_date)
+            self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), reverse=True)
+            self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('last_date'), reverse=True)
+            # print()
+            # for d in self.cur_articles_list:
+            #     print(d.last_date)
+            #     date_parts = d.last_date.strip().split("-")
+            #     q_date = date(int(date_parts[0]), \
+            #                   int(date_parts[1]), \
+            #                   int(date_parts[2]))
+            #     d.last_date = q_date
 
-		write_current_article_list(self.cur_articles_list)
-		# with open("./../data/statistics/current_article_list", "wb") as f:
-		# 	pickle.dump(self.cur_articles_list, f, protocol=pickle.HIGHEST_PROTOCOL)
+        self.is_ranked = True
+        self.rank_type = rank_type
 
+        write_current_article_list(self.cur_articles_list)
 
-	def add_filter(self, filter_type, filter_data):
-		"""
-		add filter by data or law
-		filter_type = 'law' or 'date'
-		date = "day-month-year"
-		фильтр по дате - оставляю только те статьи, 
-		упоминание о котором есть позднее указанного числа
-		if filter by date: filter_data is string: "year.month.day"
-		if filter by law: filter_data - law name (ex. "Гражданский кодекс") - 
-		-здесь скорее всего должен быть выпадающий список
-		"""
-		if filter_type in self.filters:
-			pass
-		else:
-			if filter_type == 'law':
-				self.cur_articles_list = [article for article in self.cur_articles_list \
-					if a.official_article.law.strip().lower() == filters_data.strip().lower()]
-
-			if filter_type == 'date':
-				date_parts = filter_data.strip().split("-")
-				filter_date = date(int(date_parts[2]), \
-					 				int(date_parts[1]), \
-					 				int(date_parts[0]))
-
-				self.cur_articles_list = [article for article in self.cur_articles_list \
-					if a.last_date >= filters_date]
-				
-			self.filters_type.append(filter_type)
-			self.filters_data.append(filter_data)
-
-			write_current_article_list(self.cur_articles_list)
-
-	def cancel_filter(self, filter_type):
-		self.filters_data.pop(self.filters_type.index(filter_type))
-		self.filters_type.remove(filter_type)
-
-		self.cur_articles_list = self.articles_list_all.copy()
-		for i, f in enumerate(self.filters_type):
-			self.add_filter(filter_type = f, filter_data = self.filters_data[i])
-
-		write_current_article_list(self.cur_articles_list)
+    # with open("./../data/statistics/current_article_list", "wb") as f:
+    # 	pickle.dump(self.cur_articles_list, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+    def add_filter(self, filter_type, filter_data):
+        """
+        add filter by data or law
+        filter_type = 'law' or 'date'
+        date = "day-month-year"
+        фильтр по дате - оставляю только те статьи,
+        упоминание о котором есть позднее указанного числа
+        if filter by date: filter_data is string: "year.month.day"
+        if filter by law: filter_data - law name (ex. "Гражданский кодекс") -
+        -здесь скорее всего должен быть выпадающий список
+        """
+        if filter_type in self.filters:
+            pass
+        else:
+            if filter_type == 'law':
+                self.cur_articles_list = [article for article in self.cur_articles_list \
+                                          if a.official_article.law.strip().lower() == filters_data.strip().lower()]
+
+            if filter_type == 'date':
+                date_parts = filter_data.strip().split("-")
+                filter_date = date(int(date_parts[2]), \
+                                   int(date_parts[1]), \
+                                   int(date_parts[0]))
+
+                self.cur_articles_list = [article for article in self.cur_articles_list \
+                                          if a.last_date >= filters_date]
+
+            self.filters_type.append(filter_type)
+            self.filters_data.append(filter_data)
+
+            write_current_article_list(self.cur_articles_list)
+
+    def cancel_filter(self, filter_type):
+        self.filters_data.pop(self.filters_type.index(filter_type))
+        self.filters_type.remove(filter_type)
+
+        self.cur_articles_list = self.articles_list_all.copy()
+        for i, f in enumerate(self.filters_type):
+            self.add_filter(filter_type=f, filter_data=self.filters_data[i])
+
+        write_current_article_list(self.cur_articles_list)
 
 index = StatisticsModule(recompute_statistics = True)
 # print(len(index.article_index))
