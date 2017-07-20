@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <script src="https://use.fontawesome.com/fdd61ae55f.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <title>Forum Analysis</title>
+</head>
+<body>
+    <a href="https://github.com/consjuly542/ForumAnalysis"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+    <div class="row top-title">
+        <div class="col-12">Forum Analysis</div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-12 col-lg-6">
+            <ul class="nav nav-pills nav-fill">
+              <li class="nav-item z-level-1">
+                <a class="nav-link" href="/">Home</a>
+              </li>
+              <li class="nav-item z-level-1">
+                <a class="nav-link" href="/statistics">Statistics</a>
+              </li>
+              <li class="nav-item z-level-1">
+                <a class="nav-link" href="/analytics">Data Analytics</a>
+              </li>
+              <li class="nav-item z-level-1">
+                <a class="nav-link" href="/fun">Fun</a>
+              </li>
+            </ul>
+        </div>
+    </div>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <a id="back-to-top" href="#" class="btn btn-secondary btn-lg back-to-top" role="button" data-placement="left"><i class="fa fa-caret-square-o-up" aria-hidden="true"></i></a>
+    {% block scripts %}{% endblock %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 50) {
+                    $('#back-to-top').fadeIn();
+                } else {
+                    $('#back-to-top').fadeOut();
+                }
+            });
+            // scroll body to 0px on click
+            $('#back-to-top').click(function () {
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>
