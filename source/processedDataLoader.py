@@ -44,9 +44,10 @@ def loadDataGenerator(dirpath = '../data/processed'):
     klerk_file = glob.glob('../data/processed/klerk/**/*.txt', recursive=True)
     # print (len(klerk_file))
     listdir += klerk_file
-    listdir = listdir[:100]
+    listdir = listdir
     while cur_file < len(listdir):
-        sys.stderr.write("\rPrepare %d / %d files" % (cur_file, len(listdir)))
+        sys.stderr.write("\rPrepare %d / %d files, cur_file: %s" % \
+            (cur_file, len(listdir), listdir[cur_file]))
         question_list = []
         for filename in listdir[cur_file:cur_file + batch_size]:
             # sys.stderr.write("\n\rfilename %s" % (filename))

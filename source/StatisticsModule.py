@@ -5,6 +5,7 @@ from processedDataLoader import loadDataGenerator
 import load_file_article
 from ArticleStatistics import ArticleStatistics
 from links_searcher import *
+import _pickle as cPickle
 import pickle
 import operator
 # from link_to_article import link_to_article
@@ -12,9 +13,35 @@ from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 
+def data2dict(data):
+    for i, d in enumerate(data):
+        for j, dt in enumerate(data[i].dates):
+            data[i].dates[j] = convert_date(dt)
+        data[i].last_date = convert_date(data[i].last_date)
+        data[i].first_date = convert_date(data[i].first_date)
+        data[i].official_article.date = convert_date(data[i].official_article.date)
+        data[i].official_article.edit_date = convert_date(data[i].official_article.edit_date)
+        for j, dt in enumerate(data[i].questions):
+            data[i].questions[j].date = convert_date(dt.date)
+            data[i].questions[j] = dt.__dict__
+        data[i].official_article = d.official_article.__dict__
+        data[i] = d.__dict__
+    return data
+
+def convert_date(dt):
+    if not isinstance(dt, str):
+        dt = str(dt)
+    parts = re.split(r'\.|\_|\-', dt)
+    if len(parts) == 1:
+        parts = str(dt).split('.')
+    if len(parts[0]) == 4:
+        return '.'.join(reversed(parts))
+    return str(dt)
+
 def write_current_article_list(articles_list, cnt_visible_article = 30):
 	with open("./../data/statistics/current_article_list", "wb") as f:
-		pickle.dump(articles_list[:cnt_visible_article], f, protocol=pickle.HIGHEST_PROTOCOL)
+		article_dict = data2dict(articles_list[:cnt_visible_article])
+		cPickle.dump(article_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 # class StatisticsModule(Module):
 class StatisticsModule(object):
@@ -47,7 +74,7 @@ class StatisticsModule(object):
 		self.article_index = {a.article_ID:ArticleStatistics(a) for a in articles}
 
 		with open("./../data/statistics/article_index", "wb") as f:
-			pickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
+			cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
 		
 	def get_article_statistics(self, recompute_statistic=True):
 		if recompute_statistic:
@@ -82,13 +109,13 @@ class StatisticsModule(object):
 							# 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
 							# 	return 
 
-					sys.stderr.write("\r\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
+					sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
 			with open("./../data/statistics/article_statistics", "wb") as f:
-				pickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
+				cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
 		else:
 			with open("./../data/statistics/article_statistics", "rb") as f:
-				self.article_index = pickle.load(f)
+				self.article_index = cPickle.load(f)
 
 	def ranking_articles(self, rank_type = 'by_cnt_questions'):
 		if rank_type == 'by_cnt_questions':
