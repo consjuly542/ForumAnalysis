@@ -1,3 +1,5 @@
+'''Script for loading question type'''
+
 from Question import Question9111, QuestionKlerk
 
 import json
@@ -5,6 +7,17 @@ import os
 
 
 def load_data(dirpath='../data/processed'):
+    '''
+	Loads data Question's type
+	
+	Parameters:
+	-------------
+	*dirpath (string): path to directory of file
+	
+	Returns:
+	-------------
+	None
+	'''
     for file in os.listdir(dirpath):
         filepath = os.path.join(dirpath, file)
         with open(filepath) as input_file:
