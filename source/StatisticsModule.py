@@ -187,7 +187,7 @@ class StatisticsModule(object):
           					if article.official_article.law.strip().lower() == filter_data.strip().lower()]
 
             if filter_type == 'date':
-                date_parts = filter_data.strip().split("-")
+                date_parts = filter_data.strip().split(".")
                 filter_date = date(int(date_parts[2]), \
                                    int(date_parts[1]), \
                                    int(date_parts[0]))
@@ -201,8 +201,9 @@ class StatisticsModule(object):
             write_current_article_list(self.cur_articles_list)
 
     def cancel_filter(self, filter_type):
-        self.filters_data.pop(self.filters_type.index(filter_type))
-        self.filters_type.remove(filter_type)
+        if filter_type in self.filters_type:
+            self.filters_data.pop(self.filters_type.index(filter_type))
+            self.filters_type.remove(filter_type)
 
         self.cur_articles_list = self.articles_list_all.copy()
         for i, f in enumerate(self.filters_type):
