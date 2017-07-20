@@ -28,15 +28,17 @@ def get_view():
     stats_module.ranking_articles(rank_type='by_cnt_questions')
     data = get_data()
     try:
-        return render_template('Statistics/index.html', data=data)
+        return render_template('Statistics/index.html', data=data, rank='by_cnt_questions')
     except TemplateNotFound:
         abort(404)
 
-@statistics_page.route('/rank/<rank_by>', methods=['GET'])
+
+@statistics_page.route('/rank/', defaults={'rank_by': 'by_cnt_questions', 'filters': []})
+@statistics_page.route('/rank/<rank_by>/filters/<filters>', methods=['GET'])
 def rank(rank_by):
     stats_module.ranking_articles(rank_type=rank_by)
     data = get_data()
     try:
-        return render_template('Statistics/index.html', data=data)
+        return render_template('Statistics/index.html', data=data, rank=rank_by)
     except TemplateNotFound:
         abort(404)
