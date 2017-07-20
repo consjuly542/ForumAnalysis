@@ -100,3 +100,6 @@ ENV/
 
 # PyCharm etc.
 .idea/
+
+# Exclude article_questions
+article_questions/

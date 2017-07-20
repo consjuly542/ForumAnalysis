@@ -58,6 +58,9 @@ a:hover {
 
 .nav li {
     background-color: #aa8cd8;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .nav li a {
