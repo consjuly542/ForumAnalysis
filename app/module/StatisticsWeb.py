@@ -41,14 +41,14 @@ statistics_page = Blueprint('statistics_page', __name__,
 @statistics_page.route('/')
 def get_view():
     data = None
-    with open(os.path.join(ROOT_DIR, 'data/res/current_article_list'), 'rb') as f_in:
+    with open(os.path.join(ROOT_DIR, 'data/statistics/current_article_list'), 'rb') as f_in:
         data = pickle.load(f_in)
     s_data = data2dict(data)
     # for idx, item in enumerate(data):
     #     data[idx]['official_article'].date = '.'.join(reversed(item['official_article'].date.split('.')))
     #     data[idx]['official_article'].law = ''.join([i[0].upper() for i in item['official_article'].law.split()])
     try:
-        return render_template('Statistics/index.html', data=s_data[:20])
+        return render_template('Statistics/index.html', data=s_data)
     except TemplateNotFound:
         abort(404)
 

@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block head_custom %}
 <link href="{{ url_for('static', filename='lib/datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
-<script src="{{ url_for('static', filename='lib/datepicker/js/bootstrap-datepicker.min.js') }}" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='lib/datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='lib/datepicker/locales/bootstrap-datepicker.ru.min.js') }}"></script>
 {% endblock %}
 {% block content %}
 <div class="row">
@@ -88,7 +89,8 @@
             $(this).find('.item-question').slice(0, 3).show();
         });
         $('#datepicker').datepicker({
-            todayHighlight: true
+            todayHighlight: true,
+            language: "ru-RU"
         });
     });
     $('.article-stats .card-block .block-header').bind('click', function() {
