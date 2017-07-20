@@ -105,12 +105,11 @@ class StatisticsModule(object):
 							# error_link.append(link)
 							# print( link.to_dict())
 							# if cnt_not_match_links > 20:
-							# 	print ("I AM HERE")
 							# 	with open("./error_link", "wb") as f:
 							# 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
 							# 	return 
 
-					sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
+					sys.stderr.write("\r\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
 			with open("./../data/statistics/article_statistics", "wb") as f:
 				cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -128,8 +127,8 @@ class StatisticsModule(object):
 			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'), reverse=True)
 			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('sum_answers_cnt'), reverse=True)
 		elif rank_type == 'by_date':
-			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), inverse=True)
-			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('last_date'), inverse=True)
+			self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), reverse=True)
+			self.articles_list_all = sorted(self.article_index.values(), key=operator.attrgetter('last_date'), reverse=True)
 
 		self.is_ranked = True
 		self.rank_type = rank_type
@@ -183,7 +182,7 @@ class StatisticsModule(object):
 
 
 
-index = StatisticsModule()
+index = StatisticsModule(recompute_statistics = True)
 # print(len(index.article_index))
 # # for idx, k in enumerate(index.article_index.keys()):
 # # 	if idx > 2:
