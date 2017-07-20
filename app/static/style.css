@@ -104,3 +104,7 @@ a:hover {
 .toggle-questions:hover {
     color: #ffb13d;
 }
+
+.cons-link {
+    font-size: 16px;
+}

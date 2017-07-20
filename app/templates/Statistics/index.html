@@ -36,9 +36,7 @@
                     <div class="card-block">
                         <div class="block-header">
                             <h4 class="card-title">
-                                <a href="{{item.article_link}}" target="_blank">
-                                    Статья {{ item['official_article']['article_num'] }} "{{ item['official_article']['article'] }}"
-                                </a>
+                                Статья {{ item['official_article']['article_num'] }} "{{ item['official_article']['article'] }}" <i class="cons-link"><a href="{{item['official_article']['article_link']}}" target="_blank">(ссылка)</a></i>
                             </h4>
                             <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article']['law'] }} от {{ item['official_article']['date'] }} N{{item['official_article']['law_num']}}</h6>
                         </div>
