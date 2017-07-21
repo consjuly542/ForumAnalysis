@@ -2,6 +2,7 @@ body {
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     /*background-image: url('gplaypattern_2X.png');*/
+    overflow-x: hidden;
 }
 
 a {

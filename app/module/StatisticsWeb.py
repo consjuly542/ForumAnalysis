@@ -66,7 +66,7 @@ def get_view(save_options=False):
         data = get_data()
         try:
             return render_template('Statistics/index.html',
-                                    data=render_template('Statistics/articles_data.html', data=data),
+                                    data=render_template('Statistics/articles_data.html', data=data, enumerate=enumerate, len=len),
                                     codex_list=codex_list,
                                     rank='by_cnt_questions',
                                     ascending=False)
