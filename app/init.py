@@ -13,17 +13,17 @@ app.debug = False
 def not_found(error):
     return render_template('404.html'), 404
 
+# Home page route
 @app.route('/')
 def index():
     return render_template('home.html')
 
+# Import StatisticsWeb blueprint
 from app.module.StatisticsWeb import statistics_page
 app.register_blueprint(statistics_page, url_prefix='/statistics')
 
+# Import ArticlesWeb blueprint
 from app.module.ArticlesWeb import articles_page
 app.register_blueprint(articles_page, url_prefix='/articles')
 
-# cd app
-# set PYTHONPATH=..
-# "C:\ProgramData\Anaconda3\python.exe" __init__.py
 app.run(host="0.0.0.0", port="3030")

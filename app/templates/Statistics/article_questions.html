@@ -55,13 +55,13 @@
 {% block scripts %}
 <script type="text/javascript">
     $(document).ready(function() {
-        $('.question-list').each(function(index) {
+        /*$('.question-list').each(function(index) {
             var questions = $(this).find('.item-question');
             if(questions.length > 3) {
                 $(this).find('.toggle-questions').show();
             }
             $(this).find('.item-question').slice(0, 3).show();
-        });
+        });*/
         // reload select values (they reset when using Back button in browser)
         $("select").each(function () {
             $(this).val($(this).find('option[selected]').val());

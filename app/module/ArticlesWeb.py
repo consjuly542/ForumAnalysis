@@ -1,3 +1,7 @@
+'''
+articles_page blueprint
+'''
+
 from definitions import ROOT_DIR
 import sys
 import os.path
@@ -9,7 +13,19 @@ from jinja2 import TemplateNotFound
 articles_page = Blueprint('articles_page', __name__,
                           template_folder='templates')
 
+
 def get_articles_list():
+    '''
+    Gets articles from folder
+
+    Parameters
+    ------------
+        None
+
+    Returns
+    ------------
+    * data(object[]): array of objects({'name', 'extension'})
+    '''
     data = []
     for root, _, files in os.walk(os.path.join(ROOT_DIR, 'app/static/articles')):
         for f in files:
@@ -21,10 +37,11 @@ def get_articles_list():
             })
     return data
 
+
 @articles_page.route('/')
 def get_view():
     data = get_articles_list()
     try:
-        return render_template('Articles/index.html',data=data)
+        return render_template('Articles/index.html', data=data)
     except TemplateNotFound:
         abort(404)

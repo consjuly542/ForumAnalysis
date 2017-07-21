@@ -41,6 +41,7 @@
     {% block scripts %}{% endblock %}
     <script type="text/javascript">
         $(document).ready(function(){
+            //back-to-top button toggle on scroll
             $(window).scroll(function () {
                 if ($(this).scrollTop() > 50) {
                     $('#back-to-top').fadeIn();

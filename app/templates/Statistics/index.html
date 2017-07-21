@@ -57,18 +57,12 @@
 {% block scripts %}
 <script type="text/javascript">
     $(document).ready(function() {
-        $('.question-list').each(function(index) {
-            var questions = $(this).find('.item-question');
-            if(questions.length > 3) {
-                $(this).find('.toggle-questions').show();
-            }
-            $(this).find('.item-question').slice(0, 3).show();
-        });
         // reload select values (they reset when using Back button in browser)
         $("select").each(function () {
             $(this).val($(this).find('option[selected]').val());
         });
     });
+    // handler: click event on article card header
     $(document).on('click', '.article-stats .card-block .block-header', function() {
         var stats_block = $(this).closest('.article-stats');
         var card_text = $(stats_block).find('.card-text');
@@ -90,17 +84,6 @@
     $(document).on('click', '.cons-link', function(evt) {
         evt.stopPropagation();
     });
-    /*$('.toggle-questions').bind('click', function() {
-        var question_list = $(this).closest('.question-list');
-        var value = $(this).text();
-        if(value == 'Смотреть все') {
-            $(question_list).find('.item-question').show();
-            $(this).text('Свернуть');
-        } else {
-            $(question_list).find('.item-question').slice(3).hide();
-            $(this).text('Смотреть все');
-        }
-    });*/
     $('#datepicker').datepicker({
         todayHighlight: true,
         language: "ru-RU"
@@ -117,6 +100,7 @@
     $(document).on('change', '#filter_law', function() {
         $(this).closest('form').trigger('submit');
     });
+    // handler: filters and rank form submit
     $(document).on('submit', '#rank_and_filters', function(evt) {
         $(document).find('#articles').html(`<p align="center">Идет загрузка...</p>`);
         // Get form data
@@ -162,6 +146,7 @@
 
         evt.preventDefault();
     });
+    // handler: clear filters button
     $(document).on('click', '#clear_filters', function() {
         $('#filter_law').val($("#filter_law option:first").val());
         $('#filter_date').val("");
