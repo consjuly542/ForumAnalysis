@@ -9,6 +9,7 @@ import _pickle as cPickle
 import pickle
 from copy import deepcopy as copy
 import re
+import operator
 
 def convert_date(dt):
     if not isinstance(dt, str):
@@ -93,6 +94,7 @@ def get_questions(questions_filename):
 				questions_list.append(pickle.load(f))
 			except:
 				break
+	questions_list = sorted(questions_list, key=operator.itemgetter('date'), reverse=True)
 	return questions_list
 
 

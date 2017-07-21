@@ -14,6 +14,7 @@ from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 from datetime import date
+from PlotsMaker import plot_dates
 
 
 def data2dict(s_data):
@@ -44,7 +45,7 @@ def convert_date(dt):
     return str(dt)
 
 
-def write_current_article_list(articles_list, cnt_visible_article=30):
+def write_current_article_list(articles_list, cnt_visible_article=50):
     with open("./../data/statistics/current_article_list", "wb") as f:
         article_dict = data2dict(copy(articles_list)[:cnt_visible_article])
         cPickle.dump(article_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -118,7 +119,7 @@ class StatisticsModule(object):
                         # 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
                         # 	return
 
-                    sys.stderr.write("\r\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
+                    sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
             with open("./../data/statistics/article_statistics", "wb") as f:
                 cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -148,8 +149,16 @@ class StatisticsModule(object):
 
         write_current_article_list(self.cur_articles_list)
 
-    # with open("./../data/statistics/current_article_list", "wb") as f:
-    # 	pickle.dump(self.cur_articles_list, f, protocol=pickle.HIGHEST_PROTOCOL)
+    def get_graphics(self, dirpath = "../app/static/article_pics/"):
+        with open("./../data/statistics/article_statistics", "rb") as f:
+            self.article_index = cPickle.load(f)
+
+        for idx, article_ID in enumerate(self.article_index.keys()):
+            # sys.stderr.write("\r %d / %d" % (idx, len(list(self.article_index.keys()))))
+            if len(self.article_index[article_ID].dates) >= 1:
+                print (self.article_index[article_ID].dates[:10])
+                plot_dates(self.article_index[article_ID].dates, dirpath + article_ID)
+
 
 
     def add_filter(self, filter_type, filter_data):
@@ -196,6 +205,7 @@ class StatisticsModule(object):
         write_current_article_list(self.cur_articles_list)
 
 # index = StatisticsModule(recompute_statistics = True)
+# index = StatisticsModule(recompute_statistics = False).get_graphics()
 # index.add_filter(filter_type='law', filter_data = 'гражданский кодекс')
 
 # # print(len(index.article_index))

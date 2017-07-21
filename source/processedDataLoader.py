@@ -52,11 +52,14 @@ def loadDataGenerator(dirpath = '../data/processed'):
             (cur_file, len(listdir), listdir[cur_file]))
         question_list = []
         for filename in listdir[cur_file:cur_file + batch_size]:
-            # sys.stderr.write("\n\rfilename %s" % (filename))
-            filepath = os.path.join(dirpath, filename)
-            with open(filepath) as input_file:
+
+            if filename not in klerk_file:
+                filepath = os.path.join(dirpath, filename)
+            else:
+                filepath = filename
+
+            with open(filepath, encoding = 'utf-8') as input_file:
                 data = json.load(input_file)
-                #print(data)
                 
                 for d in data:
                     if filename.lower().find("klerk") != -1:

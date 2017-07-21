@@ -46,7 +46,7 @@ def plot_dates(datesList, path):
     myFmt = mdates.DateFormatter('%d/%m')
     ax.xaxis.set_major_formatter(myFmt)
     
-    plt.show()
+    # plt.show()
     plt.savefig(path+".png")
     
 def test(path):
