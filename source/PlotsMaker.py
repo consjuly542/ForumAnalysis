@@ -8,7 +8,7 @@ import operator
 import pandas as pd
 
 
-def plot_datetime(datesList, path): 
+def plot_dates(datesList, path): 
     x, y = zip(*sorted(Counter(datesList).items(),key = operator.itemgetter(0),reverse = True))
     plt.style.use('seaborn-colorblind')
     plt.style.use('seaborn-ticks')
