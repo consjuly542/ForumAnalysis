@@ -35,7 +35,7 @@ def load_art_questions(article_id):
     return data
 
 @statistics_page.route('/', methods=['GET', 'POST'])
-def get_view():
+def get_view(save_options=False):
     # data:
     # -> rank: (string)
     # -> filters: [{'filter_type': (string), 'filter_data': (string)}]
@@ -58,15 +58,16 @@ def get_view():
         except TemplateNotFound:
             abort(404)
     else:
-        stats_module.ranking_articles()
-        stats_module.cancel_filter('law')
-        stats_module.cancel_filter('date')
+        if not save_options:
+            stats_module.ranking_articles()
+            stats_module.cancel_filter('law')
+            stats_module.cancel_filter('date')
         codex_list = load_codex_list()
         data = get_data()
         try:
-            return render_template('Statistics/index.html', 
-                                    data=render_template('Statistics/articles_data.html',data=data), 
-                                    codex_list=codex_list, 
+            return render_template('Statistics/index.html',
+                                    data=render_template('Statistics/articles_data.html', data=data),
+                                    codex_list=codex_list,
                                     rank='by_cnt_questions',
                                     ascending=False)
         except TemplateNotFound:
@@ -74,9 +75,16 @@ def get_view():
 
 @statistics_page.route('/<article_id>/questions')
 def art_questions(article_id):
+    # Find article info
+    data = get_data()
+    art_data = None
+    for item in data:
+        if item['official_article']['article_ID'] == article_id:
+            art_data = item
+            break
     data = load_art_questions(article_id)
     try:
-        return render_template('Statistics/article_questions.html', data=data)
+        return render_template('Statistics/article_questions.html', data=data, info=art_data)
     except TemplateNotFound:
         abort(404)
 

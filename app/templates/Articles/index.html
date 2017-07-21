@@ -1,8 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
-<ul>
 {% for item in data %}
-    <li><a href="{{ url_for('static', filename='articles/' + item['name'] + '.' + item['extension']) }}" target="_blank">{{ item['name'] }}.{{ item['extension'] }}</a></li>
+<div class="row">
+    <div class="col-12">
+        <a href="{{ url_for('static', filename='articles/' + item['name'] + '.' + item['extension']) }}" target="_blank">
+            <div class="card z-level-2">
+                <div class="card-block">
+                    <div class="block-header">
+                        <h4 class="card-title">
+                            {{ item['name'] }}.{{ item['extension'] }}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
 {% endfor %}
-<ul>
 {% endblock %}

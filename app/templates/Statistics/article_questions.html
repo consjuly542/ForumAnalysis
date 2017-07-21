@@ -1,5 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="row">
+    <div class="col-12">
+        <h4>
+            Статья {{ info['official_article']['article_num'] }} "{{ info['official_article']['article'] }}" <i class="cons-link"><a href="{{info['official_article']['article_link']}}" target="_blank">(ссылка на КонсультантПлюс)</a></i>
+        </h4>
+        <h6 class="text-muted">
+            {{ info['official_article']['law'] }} от {{ info['official_article']['date'] }} N{{info['official_article']['law_num']}}
+        </h6>
+    </div>
+</div>
+<hr />
 {% for item in data %}
 <div class="row">
     <div class="col-12">

@@ -30,9 +30,9 @@
                         <label for="filter_codex" class="col-sm-4 col-form-label">Кодекс</label>
                         <div class="col-sm-12">
                             <select class="form-control" id="filter_law" name="filter_law">
-                                <option selected></option>
+                                <option></option>
                                 {% for codex in codex_list %}
-                                <option>{{codex}}</option>
+                                <option {% if codex==codex_selected %}selected{% endif %}>{{codex}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -46,6 +46,7 @@
                 </div>
             </form>
             <input type="button" class="btn btn-secondary btn-block" value="Очистить фильтры" id="clear_filters" />
+            <hr />
         </div>
     </div>
     <div class="col-lg-9" id="articles">
@@ -84,6 +85,7 @@
         }
         // Toggle full info about current article
         $(card_text).slideToggle(500);
+
     });
     $(document).on('click', '.cons-link', function(evt) {
         evt.stopPropagation();
@@ -116,6 +118,7 @@
         $(this).closest('form').trigger('submit');
     });
     $(document).on('submit', '#rank_and_filters', function(evt) {
+        $(document).find('#articles').html(`<p align="center">Идет загрузка...</p>`);
         // Get form data
         var form_data = $(this).serializeArray();
         var rank = "by_cnt_questions";
