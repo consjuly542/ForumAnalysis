@@ -45,9 +45,9 @@ def plot_dates(datesList, path):
     plt.ylim(0)
     myFmt = mdates.DateFormatter('%d/%m')
     ax.xaxis.set_major_formatter(myFmt)
-
-    plt.savefig(path + ".png")
+  
     # plt.show()
+    plt.savefig(path+".png")
     
 def test(path):
     x = pd.date_range(start = '20170101',freq='D', periods=15)
