@@ -195,7 +195,7 @@ class StatisticsModule(object):
 
         write_current_article_list(self.cur_articles_list)
 
-index = StatisticsModule(recompute_statistics = True)
+# index = StatisticsModule(recompute_statistics = True)
 # index.add_filter(filter_type='law', filter_data = 'гражданский кодекс')
 
 # # print(len(index.article_index))
