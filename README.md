@@ -9,5 +9,5 @@
 - _data/res_: данные для веб-интерфейса
 - _data/statistics_: данные статистики
 - _data/statistics/article_questions_: файлы с вопросами для статей законов
-- _app/static/articles: авторские материалы (статьи)
-- _app/static/article_pics: изображения графиков для статей законов
+- _app/static/articles_: авторские материалы (статьи)
+- _app/static/article_pics_: изображения графиков для статей законов
