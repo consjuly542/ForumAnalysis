@@ -98,5 +98,9 @@ ENV/
 # mypy
 .mypy_cache/
 
-# PyCharm etc.
+# IDE
 .idea/
+.vscode/
+
+# Exclude article_questions
+article_questions/

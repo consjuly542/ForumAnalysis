@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+<ul>
+{% for item in data %}
+    <li><a href="{{ url_for('static', filename='articles/' + item['name'] + '.' + item['extension']) }}" target="_blank">{{ item['name'] }}.{{ item['extension'] }}</a></li>
+{% endfor %}
+<ul>
+{% endblock %}

@@ -1,22 +1,22 @@
 {% extends "layout.html" %}
 {% block head_custom %}
-<link href="{{ url_for('static', filename='lib/datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
-<script src="{{ url_for('static', filename='lib/datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-<script src="{{ url_for('static', filename='lib/datepicker/locales/bootstrap-datepicker.ru.min.js') }}"></script>
+<link href="{{ url_for('static', filename='plugins/datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='plugins/datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datepicker/locales/bootstrap-datepicker.ru.min.js') }}"></script>
 {% endblock %}
 {% block content %}
 <div class="row">
     <div class="col-lg-3 col-md-12 filters">
-        <div class="filters-inner affix">
+        <div class="filters-inner">
             <form id="rank_and_filters">
                 <div class="form-group">
                     <div class="row">
                         <label for="rank_by" class="col-sm-4 col-form-label">Сортировка</label>
                         <div class="col-sm-12">
-                            <select class="form-control" id="rank_by">
-                                <option value="{{url_for('statistics_page.get_view')}}" {% if rank=='by_cnt_questions' %}selected{% endif %}>По кол-ву вопросов</option>
-                                <option value="{{url_for('statistics_page.rank', rank_by='by_date')}}" {% if rank=='by_date' %}selected{% endif %}>По дате</option>
-                                <option value="{{url_for('statistics_page.rank', rank_by='by_sum_cnt_answers')}}" {% if rank=='by_sum_cnt_answers' %}selected{% endif %}>По кол-ву ответов</option>
+                            <select class="form-control" id="rank_by" name="rank">
+                                <option value="by_cnt_questions" {% if rank=='by_cnt_questions' %}selected{% endif %}>По кол-ву вопросов</option>
+                                <option value="by_date" {% if rank=='by_date' %}selected{% endif %}>По дате</option>
+                                <option value="by_sum_cnt_answers" {% if rank=='by_sum_cnt_answers' %}selected{% endif %}>По кол-ву ответов</option>
                             </select>
                         </div>
                     </div>
@@ -25,8 +25,8 @@
                     <div class="row">
                         <label for="filter_codex" class="col-sm-4 col-form-label">Кодекс</label>
                         <div class="col-sm-12">
-                            <select class="form-control" id="filter_codex">
-                                <option selected>-</option>
+                            <select class="form-control" id="filter_law" name="filter_law">
+                                <option selected></option>
                                 {% for codex in codex_list %}
                                 <option>{{codex}}</option>
                                 {% endfor %}
@@ -36,57 +36,16 @@
                 </div>
                 <div class="form-group">
                     <div class="input-group date" id="datepicker">
-                        <input type="text" class="form-control" placeholder="Дата"><span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                        <input type="text" class="form-control" placeholder="Дата" id="filter_date" name="filter_date">
+                        <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
                     </div>
                 </div>
             </form>
+            <input type="button" class="btn btn-secondary btn-block" value="Очистить фильтры" id="clear_filters" />
         </div>
     </div>
-    <div class="col-lg-9 articles">
-        {% for item in data %}
-        <div class="row">
-            <div class="col-12">
-                <div class="card z-level-2 article-stats">
-                    <div class="card-block">
-                        <div class="block-header">
-                            <h4 class="card-title">
-                                Статья {{ item['official_article']['article_num'] }} "{{ item['official_article']['article'] }}" <i class="cons-link"><a href="{{item['official_article']['article_link']}}" target="_blank">(ссылка)</a></i>
-                            </h4>
-                            <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article']['law'] }} от {{ item['official_article']['date'] }} N{{item['official_article']['law_num']}}</h6>
-                            <div class="row">
-                                <div class="col-lg-3 col-md-4 col-sm-4"><u>Вопросов:</u> {{ item['questions_cnt'] }}</div>
-                                <div class="col-lg-3 col-md-4 col-sm-4"><u>Ответов:</u> {{ item['sum_answers_cnt'] }}</div>
-                                <div class="col-lg-5 col-md-5 col-sm-5"><u>Последнее:</u> {{ item['last_date'] }}</div>
-                            </div>
-                        </div>
-                        <div class="card-text">
-                            <hr/>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <h5>Вопросы</h5>
-                                    <ul class="question-list">
-                                        {% for q in item['questions'] %}
-                                        <li class="item-question">{{ q['question_full'] }} <i>[{{ q['date'] }}]</i></li>
-                                        {% endfor %}
-                                        <li class="toggle-questions">Смотреть все</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <hr/>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <h5>Динамика</h5>
-                                    <div class="justify-content-md-center">
-                                        <img src="{{ url_for('static', filename='graph.png') }}" class="img-fluid" alt="Dynamics">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    <div class="col-lg-9" id="articles">
+        {{ data | safe }}
     </div>
 </div>
 {% endblock %}
@@ -100,16 +59,12 @@
             }
             $(this).find('.item-question').slice(0, 3).show();
         });
-        $('#datepicker').datepicker({
-            todayHighlight: true,
-            language: "ru-RU"
-        });
         // reload select values (they reset when using Back button in browser)
         $("select").each(function () {
             $(this).val($(this).find('option[selected]').val());
         });
     });
-    $('.article-stats .card-block .block-header').bind('click', function() {
+    $(document).on('click', '.article-stats .card-block .block-header', function() {
         var stats_block = $(this).closest('.article-stats');
         var card_text = $(stats_block).find('.card-text');
         // if active then remove active
@@ -118,10 +73,6 @@
         } else { // if not active
             // Mark as active
             $(stats_block).addClass('active');
-            // Collapse everything else
-            $(document).find('.article-stats').not('active').each(function() {
-                $(this).find('.card-text').hide();
-            });
             // Animate to active article
             $('html, body').animate({
                 scrollTop: $(stats_block).offset().top
@@ -130,10 +81,10 @@
         // Toggle full info about current article
         $(card_text).slideToggle(500);
     });
-    $('.cons-link').bind('click', function(evt) {
+    $(document).on('click', '.cons-link', function(evt) {
         evt.stopPropagation();
     });
-    $('.toggle-questions').bind('click', function() {
+    /*$('.toggle-questions').bind('click', function() {
         var question_list = $(this).closest('.question-list');
         var value = $(this).text();
         if(value == 'Смотреть все') {
@@ -143,17 +94,64 @@
             $(question_list).find('.item-question').slice(3).hide();
             $(this).text('Смотреть все');
         }
+    });*/
+    $('#datepicker').datepicker({
+        todayHighlight: true,
+        language: "ru-RU"
+    })
+    .on('changeDate', function(e) {
+        $(this).closest('form').trigger('submit');
+    });;
+    $(document).on('change', '#rank_by', function() {
+        $(this).closest('form').trigger('submit');
     });
-    $('#rank_by').bind('change', function() {
-        window.location.href = $(this).val()
+    $(document).on('change', '#filter_law', function() {
+        $(this).closest('form').trigger('submit');
     });
+    $(document).on('submit', '#rank_and_filters', function(evt) {
+        // Get form data
+        var form_data = $(this).serializeArray();
+        var rank = "by_cnt_questions";
+        var filters = [];
+        $.each(form_data, function(index, item){
+            var key = item['name'];
+            var value = item['value'];
+            if(value.length == 0) {
+                return true;
+            }
+            if(key.split('_')[0] == 'filter') {
+                filters.push({
+                    'filter_type': key.split('_')[1],
+                    'filter_data': value
+                });
+            } else if(key == 'rank') {
+                rank = value;
+            }
+        });
+        var req_data = {
+            'rank': rank,
+            'filters': filters
+        };
+        console.log(req_data);
 
-    $('#filter_codex').bind('change', function() {
-        $('#rank_and_filters').trigger('submit');
-    });
-    $('#rank_and_filters').bind('submit', function(evt) {
-        alert('form update');
+        $.ajax({
+            method: "POST",
+            url: "{{ url_for('statistics_page.get_view') }}",
+            data: JSON.stringify(req_data)
+        })
+        .done(function( data ) {
+            $('#articles').html(data);
+        })
+        .fail(function() {
+            console.error('Data request failed');
+        });
+
         evt.preventDefault();
+    });
+    $(document).on('click', '#clear_filters', function() {
+        $('#filter_law').val($("#filter_law option:first").val());
+        $('#filter_date').val("");
+        $(this).closest('div').find('form').trigger('submit');
     });
 </script>
 {% endblock %}

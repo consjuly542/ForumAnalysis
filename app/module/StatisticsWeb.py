@@ -3,6 +3,8 @@ import sys
 import os.path
 sys.path.append(os.path.join(ROOT_DIR, 'source/'))
 
+import json
+
 from source.StatisticsModule import StatisticsModule
 
 from source.ArticleStatistics import ArticleStatistics
@@ -29,34 +31,65 @@ def load_codex_list():
         codex_list = pickle.load(f_in)
     return codex_list
 
-@statistics_page.route('/')
+def load_art_questions(article_id):
+    data = None
+    with open(os.path.join(ROOT_DIR, 'data/statistics/article_questions/' + article_id), 'rb') as f_in:
+        data = pickle.load(f_in)
+    return data
+
+@statistics_page.route('/', methods=['GET', 'POST'])
 def get_view():
-    stats_module.ranking_articles(rank_type='by_cnt_questions')
-    data = get_data()
-    codex_list = load_codex_list()
+    # data:
+    # -> rank: (string)
+    # -> filters: [{'filter_type': (string), 'filter_data': (string)}]
+    if request.method == 'POST':
+        req_data = request.get_json(force=True)
+        r_rank = req_data['rank']
+        r_filters = req_data['filters']
+        stats_module.ranking_articles(rank_type=(r_rank if r_rank else 'by_cnt_questions'))
+        # Cancel prev. filters
+        stats_module.cancel_filter('law')
+        stats_module.cancel_filter('date')
+
+        if r_filters:
+            for filt in r_filters:
+                stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
+        data = get_data()
+        try:
+            return render_template('Statistics/articles_data.html',data=data)
+        except TemplateNotFound:
+            abort(404)
+    else:
+        stats_module.ranking_articles()
+        stats_module.cancel_filter('law')
+        stats_module.cancel_filter('date')
+        codex_list = load_codex_list()
+        data = get_data()
+        try:
+            return render_template('Statistics/index.html', 
+                                    data=render_template('Statistics/articles_data.html',data=data), 
+                                    codex_list=codex_list, 
+                                    rank='by_cnt_questions')
+        except TemplateNotFound:
+            abort(404)
+
+@statistics_page.route('/<article_id>/questions')
+def art_questions(article_id):
+    data = load_art_questions(article_id)
+    # TODO: REMOVE WHEN data is actually an array
+    data = [data]
     try:
-        return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank='by_cnt_questions')
+        return render_template('Statistics/article_questions.html', data=data)
     except TemplateNotFound:
         abort(404)
 
-
-@statistics_page.route('/rank/', defaults={'rank_by': 'by_cnt_questions', 'filters': []})
-@statistics_page.route('/rank/<rank_by>', methods=['GET'])
-def rank(rank_by):
-    stats_module.ranking_articles(rank_type=rank_by)
-    data = get_data()
-    codex_list = load_codex_list()
-    try:
-        return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank=rank_by)
-    except TemplateNotFound:
-        abort(404)
-
-@statistics_page.route('/test', methods=['GET', 'POST'])
-def test():
-    req_data = request.get_json()
-    stats_module.ranking_articles(rank_type='by_cnt_questions')
-    data = get_data()
-    try:
-        return render_template('Statistics/index.html', data=data, rank='by_cnt_questions', filters=filters)
-    except TemplateNotFound:
-        abort(404)
+# @statistics_page.route('/rank/', defaults={'rank_by': 'by_cnt_questions', 'filters': []})
+# @statistics_page.route('/rank/<rank_by>', methods=['GET'])
+# def rank(rank_by):
+#     stats_module.ranking_articles(rank_type=rank_by)
+#     data = get_data()
+#     codex_list = load_codex_list()
+#     try:
+#         return render_template('Statistics/index.html', data=data, codex_list=codex_list, rank=rank_by)
+#     except TemplateNotFound:
+#         abort(404)
