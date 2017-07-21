@@ -47,7 +47,7 @@ def loadDataGenerator(dirpath = '../data/processed'):
     # print (len(klerk_file))
     listdir += klerk_file
     listdir = listdir
-    while cur_file < len(listdir[:20]):
+    while cur_file < len(listdir):
         sys.stderr.write("\rPrepare %d / %d files, cur_file: %s" % \
             (cur_file, len(listdir), listdir[cur_file]))
         question_list = []

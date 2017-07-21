@@ -118,7 +118,7 @@ class StatisticsModule(object):
                         # 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
                         # 	return
 
-                    sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
+                    sys.stderr.write("\r\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
             with open("./../data/statistics/article_statistics", "wb") as f:
                 cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -126,38 +126,22 @@ class StatisticsModule(object):
             with open("./../data/statistics/article_statistics", "rb") as f:
                 self.article_index = cPickle.load(f)
 
-    def ranking_articles(self, rank_type='by_cnt_questions'):
+    def ranking_articles(self, rank_type='by_cnt_questions', ascending = False):
         if rank_type == 'by_cnt_questions':
             self.cur_articles_list = sorted(self.cur_articles_list, \
-                                            key=operator.attrgetter('questions_cnt'), reverse=True)
+                                            key=operator.attrgetter('questions_cnt'), reverse=not ascending)
             self.articles_list_all = sorted(self.articles_list_all, \
-                                            key=operator.attrgetter('questions_cnt'), reverse=True)
+                                            key=operator.attrgetter('questions_cnt'), reverse=not ascending)
         elif rank_type == 'by_sum_cnt_answers':
             self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'),
-                                            reverse=True)
+                                            reverse=not ascending)
             self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('sum_answers_cnt'),
-                                            reverse=True)
+                                            reverse=not ascending)
         elif rank_type == 'by_date':
-            # for i, d in enumerate(self.cur_articles_list):
-            #     print(self.cur_articles_list[i].last_date, end=" ")
-            #     self.cur_articles_list[i].last_date = str(d.last_date)
-            #     print(self.cur_articles_list[i].last_date)
-            for i, d in enumerate(self.cur_articles_list):
-            	if d.last_date is None:
-            		print ("1 NONE")
-            for i, d in enumerate(self.articles_list_all):
-            	if d.last_date is None:
-            		print ("2 NONE")
-            self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('last_date'), reverse=True)
-            self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('last_date'), reverse=True)
-            # print()
-            # for d in self.cur_articles_list:
-            #     print(d.last_date)
-            #     date_parts = d.last_date.strip().split("-")
-            #     q_date = date(int(date_parts[0]), \
-            #                   int(date_parts[1]), \
-            #                   int(date_parts[2]))
-            #     d.last_date = q_date
+            self.cur_articles_list = sorted(self.cur_articles_list, \
+                                            key=operator.attrgetter('last_date'), reverse=not ascending)
+            self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('last_date'), \
+                                            reverse=not ascending)
 
         self.is_ranked = True
         self.rank_type = rank_type
@@ -210,7 +194,7 @@ class StatisticsModule(object):
 
         write_current_article_list(self.cur_articles_list)
 
-# index = StatisticsModule(recompute_statistics = False)
+index = StatisticsModule(recompute_statistics = True)
 # index.add_filter(filter_type='law', filter_data = 'гражданский кодекс')
 
 # # print(len(index.article_index))
@@ -228,5 +212,5 @@ class StatisticsModule(object):
 
 # 		print (k['official_article']['law'])
 
-		# print (k['questions_cnt'], len(get_questions(k['questions_filename'])), \
-		# 	get_questions(k['questions_filename'])[0])
+# 		print (k['questions_cnt'], len(get_questions(k['questions_filename'])), \
+# 			get_questions(k['questions_filename'])[0])
