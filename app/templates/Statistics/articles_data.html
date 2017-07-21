@@ -38,7 +38,7 @@
                             <!-- "{{ url_for('static', filename='article_pics/' + item['official_article']['article_ID'] + '.png') }}" -->
                             <!-- "{{ url_for('static', filename='test.png') }}" -->
                             <img src="{{ url_for('static', filename='article_pics/' + item['official_article']['article_ID'] + '.png') }}" class="img-fluid mx-auto d-block" alt="Dynamics">
-                            <p align="center"><i>Кол-во упоминаний по дням</i></p>
+                            <p align="center"><i>Количество упоминаний по дням</i></p>
                         </div>
                     </div>
                     {% if len(item['parts_statistics']) %}
@@ -47,8 +47,8 @@
                         <div class="col-lg-12">
                             <h5>Упоминания пунктов статьи</h5>
                             <ul>
-                                {% for key, value in enumerate(item['parts_statistics']) %}
-                                <li><b>Пункт {{key}}</b>. Кол-во упоминаний: {{value}}</li>
+                                {% for key, value in item['parts_statistics'].items() %}
+                                <li><b>Пункт {{key}}</b>. Количество упоминаний: {{value}}</li>
                                 {% endfor %}
                             </ul>
                         </div>

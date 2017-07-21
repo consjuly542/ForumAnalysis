@@ -1,8 +1,20 @@
+'''Script for loading Article type'''
 import json
 import os
 from Article import Article
     
 def load_data():
+    '''
+	Loads Article type
+	
+	Parameters:
+	------------
+	None
+	
+	Returns:
+	----------
+	* (list of dictionaries): list of dictionaries, where every article is a dictionary
+	'''
     article_list = []
     f = open('../data/article_list_laws.txt', 'r')
     data = json.load(f)
