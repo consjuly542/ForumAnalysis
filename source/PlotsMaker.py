@@ -45,11 +45,11 @@ def plot_dates(datesList, path):
     plt.ylim(0)
     myFmt = mdates.DateFormatter('%d/%m')
     ax.xaxis.set_major_formatter(myFmt)
-    
+  
     # plt.show()
     plt.savefig(path+".png")
     
 def test(path):
     x = pd.date_range(start = '20170101',freq='D', periods=15)
     y = [i+random.gauss(0,1) for i,_ in enumerate(x)]
-    plot_datetime(dict(zip(x, y)), "path")
+    plot_dates(dict(zip(x, y)), path)
