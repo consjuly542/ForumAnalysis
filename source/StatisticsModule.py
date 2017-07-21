@@ -18,6 +18,19 @@ from PlotsMaker import plot_dates
 
 
 def data2dict(s_data):
+    """
+    Convert list of class to 
+    list of dictionary with convert date to one format.
+
+    Parameters
+    ------------
+    *s_data (list of instance ArticleStatistics)
+    
+    Returns
+    ------------
+    *data  (list of dictionary): converted list
+
+    """
     data = copy(s_data)
     for i, d in enumerate(data):
         for j, dt in enumerate(data[i].dates):
@@ -26,15 +39,23 @@ def data2dict(s_data):
         data[i].first_date = convert_date(data[i].first_date)
         data[i].official_article.date = convert_date(data[i].official_article.date)
         data[i].official_article.edit_date = convert_date(data[i].official_article.edit_date)
-        # for j, dt in enumerate(data[i].questions):
-        #     data[i].questions[j].date = convert_date(dt.date)
-        #     data[i].questions[j] = dt.__dict__
         data[i].official_article = d.official_article.__dict__
         data[i] = d.__dict__
     return data
 
 
 def convert_date(dt):
+    """
+    Convert all date formats to one format
+
+    Parameters
+    ------------
+    *dt: date to converting
+    
+    Returns
+    ------------
+    *q  (string): date in string format
+    """
     if not isinstance(dt, str):
         dt = str(dt)
     parts = re.split(r'\.|\_|\-', dt)
@@ -46,17 +67,58 @@ def convert_date(dt):
 
 
 def write_current_article_list(articles_list, cnt_visible_article=50):
+    """
+    Writing top = cnt_visible_article articles, 
+    which user want to see, to a file.
+
+    Parameters
+    -------------
+    *articles_list (list of instance ArticleStatistics): all articles
+    *cnt_visible_article (int): count of visible articles 
+    """
     with open("./../data/statistics/current_article_list", "wb") as f:
         article_dict = data2dict(copy(articles_list)[:cnt_visible_article])
         cPickle.dump(article_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-# class StatisticsModule(Module):
 class StatisticsModule(object):
+    """
+    Module for agregate statistics.
+
+    Attributes
+    ------------
+    *cur_articles_list (list of ArticleStatistics) 
+                - list of articles with ranling and filters
+    *articles_list_all (list of ArticleStatistics)
+                - list of articles with ranking without filters
+                (for fast execution)
+    *filters_type (list of string)
+                - list of applied filters
+    *filters_data (list of string)
+                -list of data for applied filters
+
+    Methods
+    ----------
+    *get_article_index() - build empty index from official article
+    *get_article_statistics() - agregate staticstics from both forums
+    *ranking_articles() - ranking articles with given type
+    *get_graphics() - creation plot of interest for each article
+    *add_filter() - add filter with given data and type
+    *cancel_filter() - cancel filter with given type
+    """
     def __run__(self, file_origin, file_target):
         pass
 
     def __init__(self, recompute_statistics=False):
+        """
+        Initiation of module.
+
+        Parameters
+        ------------
+        *recompute_statistics(boolean): if True, statistics are calculated again,
+                                    if False, statistics are loaded from file
+        
+        """
         self.get_article_statistics(recompute_statistics=recompute_statistics)
         # list which users see
         self.cur_articles_list = list(self.article_index.values())
@@ -65,9 +127,6 @@ class StatisticsModule(object):
         self.articles_list_all = list(self.article_index.values())
         self.articles_list_all = [a for a in self.articles_list_all if a.questions_cnt > 0]
 
-        self.is_ranked = False
-        self.is_filtered = False
-        self.rank_type = None
         # filters list
         self.filters_type = []
         self.filters_data = []
@@ -77,7 +136,8 @@ class StatisticsModule(object):
 
     def get_article_index(self):
         """
-        Create dictionary {article:article_statistics}
+        Create dictionary {article:article_statistics} -
+        Empty index for future statistics
         """
         articles = load_file_article.load_data()
         print ("Count official articles: %d" % len(articles))
@@ -87,6 +147,9 @@ class StatisticsModule(object):
             cPickle.dump(self.article_index, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     def get_article_statistics(self, recompute_statistics=True):
+        """
+        Agregate statistics from both forum.
+        """
         if recompute_statistics:
             self.get_article_index()
             data_generator = loadDataGenerator()
@@ -109,15 +172,6 @@ class StatisticsModule(object):
                             self.article_index[article.article_ID].add_question(question, link)
                         else:
                             cnt_not_match_links += 1
-                        # log.write(link.link_text + '\n')
-                        # log.flush()
-                        # error_link.append(link)
-                        # print( link.to_dict())
-                        # if cnt_not_match_links > 20:
-                        # 	print ("I AM HERE")
-                        # 	with open("./error_link", "wb") as f:
-                        # 		pickle.dump(error_link, f, protocol=pickle.HIGHEST_PROTOCOL)
-                        # 	return
 
                     sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
@@ -144,9 +198,6 @@ class StatisticsModule(object):
             self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('last_date'), \
                                             reverse=not ascending)
 
-        self.is_ranked = True
-        self.rank_type = rank_type
-
         write_current_article_list(self.cur_articles_list)
 
     def get_graphics(self, dirpath = "../app/static/article_pics/"):
@@ -170,7 +221,6 @@ class StatisticsModule(object):
         упоминание о котором есть позднее указанного числа
         if filter by date: filter_data is string: "year.month.day"
         if filter by law: filter_data - law name (ex. "Гражданский кодекс") -
-        -здесь скорее всего должен быть выпадающий список
         """
         if filter_type in self.filters_type:
             pass
