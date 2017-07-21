@@ -4,7 +4,7 @@
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          Нажмите на карточку статьи, чтобы посмотреть подробную информацию.
+          Нажмите стрелку на карточке, чтобы посмотреть подробную информацию о статье.
         </div>
     </div>
 </div>
@@ -23,6 +23,7 @@
                         <div class="col-lg-3 col-md-4 col-sm-4"><b>Ответов:</b> {{ item['sum_answers_cnt'] }}</div>
                         <div class="col-lg-5 col-md-5 col-sm-5"><b>Последнее:</b> {{ item['last_date'] }}</div>
                     </div>
+                    <p align="center" style="margin-bottom: -16px;" class="toggle-info"><i class="fa fa-sort-desc" aria-hidden="true"></i></p>
                 </div>
                 <div class="card-text">
                     <hr/>

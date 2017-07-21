@@ -63,13 +63,15 @@
         });
     });
     // handler: click event on article card header
-    $(document).on('click', '.article-stats .card-block .block-header', function() {
+    $(document).on('click', '.article-stats .card-block .block-header .toggle-info', function() {
         var stats_block = $(this).closest('.article-stats');
         var card_text = $(stats_block).find('.card-text');
         // if active then remove active
         if ($(stats_block).hasClass('active')) {
             $(stats_block).removeClass('active');
+            $(this).html('<i class="fa fa-sort-desc" aria-hidden="true"></i>');
         } else { // if not active
+            $(this).html('<i class="fa fa-sort-asc" aria-hidden="true"></i>');
             // Mark as active
             $(stats_block).addClass('active');
             // Animate to active article

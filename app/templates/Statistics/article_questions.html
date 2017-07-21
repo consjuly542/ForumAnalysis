@@ -24,6 +24,7 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-4"><b>Просмотров:</b> {{ item['views_count'] }}</div>
                     </div>
+                    <p align="center" style="margin-bottom: -16px;" class="toggle-info"><i class="fa fa-sort-desc" aria-hidden="true"></i></p>
                 </div>
                 <div class="card-text">
                     <hr/>
@@ -67,13 +68,15 @@
             $(this).val($(this).find('option[selected]').val());
         });
     });
-    $(document).on('click', '.article-stats .card-block .block-header', function() {
+    $(document).on('click', '.article-stats .card-block .block-header .toggle-info', function() {
         var stats_block = $(this).closest('.article-stats');
         var card_text = $(stats_block).find('.card-text');
         // if active then remove active
         if ($(stats_block).hasClass('active')) {
             $(stats_block).removeClass('active');
+            $(this).html('<i class="fa fa-sort-desc" aria-hidden="true"></i>');
         } else { // if not active
+            $(this).html('<i class="fa fa-sort-asc" aria-hidden="true"></i>');
             // Mark as active
             $(stats_block).addClass('active');
             // Animate to active article
