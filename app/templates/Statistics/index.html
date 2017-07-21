@@ -14,9 +14,9 @@
                         <label for="rank_by" class="col-sm-4 col-form-label">Сортировка</label>
                         <div class="col-sm-12">
                             <select class="form-control" id="rank_by" name="rank">
-                                <option value="by_cnt_questions" {% if rank=='by_cnt_questions' %}selected{% endif %}>По кол-ву вопросов</option>
+                                <option value="by_cnt_questions" {% if rank=='by_cnt_questions' %}selected{% endif %}>По количеству вопросов</option>
                                 <option value="by_date" {% if rank=='by_date' %}selected{% endif %}>По дате</option>
-                                <option value="by_sum_cnt_answers" {% if rank=='by_sum_cnt_answers' %}selected{% endif %}>По кол-ву ответов</option>
+                                <option value="by_sum_cnt_answers" {% if rank=='by_sum_cnt_answers' %}selected{% endif %}>По количеству ответов</option>
                             </select>
                             <select class="form-control" id="ascending" name="ascending">
                                 <option value="1" {% if ascending==True %}selected{% endif %}>По возрастанию</option>
