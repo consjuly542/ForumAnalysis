@@ -1,4 +1,4 @@
-
+'''Script for convertation link to article'''
 import json
 import os
 import re
@@ -7,11 +7,31 @@ import pickle
 from Article import Article
 
 class Link2Article(object):
+    '''
+	class Link2Article
+	'''
     def __init__(self):
+	    '''
+		Methods:
+		-----------
+		article_list: loads list of articles
+		article_dict: convert list to dict
+		'''
         self.article_list = load_data()
         self.article_dict = list_to_dict(self.article_list)
 
     def link2article(self, link):
+	    '''
+		Converts link to article
+		
+		Parameters:
+		------------
+		*link (Link): link for article(law name or law number and article number)
+		
+		Returns:
+		------------
+		* (Article): article with all information about it
+		'''
         article_ID = link_to_article_ID(link, self.article_dict)
         if article_ID == None:
             return None
@@ -20,6 +40,17 @@ class Link2Article(object):
         return(a)
 
 def load_data():
+    '''
+	Loads Article type
+	
+	Parameters:
+	------------
+	None
+	
+	Returns:
+	----------
+	* (list of dictionaries): list of dictionaries, where every article is a dictionary
+	'''
     f = open('../data/article_list_laws.txt', 'r')
     article_list = []
     data = json.load(f)
@@ -46,6 +77,17 @@ def load_data():
     return(article_list)
 
 def full_codec_name(law_name):
+    '''
+	Makes full name of codecs
+	
+	Parameters:
+	-------------
+	*law_name (string): abbreviation of codecs
+	
+	Returns: 
+	----------
+	* (string): full name of codecs
+	'''
     if (law_name.find('апк')==0):
         codec_name = 'арбитражный процессуальный кодекс российской федерации'
     elif (law_name.find('бк')==0):
@@ -86,6 +128,17 @@ def full_codec_name(law_name):
             
 
 def list_to_dict(article_list):
+    '''
+	Converts list to dictionary
+	
+	Parameters:
+	-------------
+	*article_list (list of dictionaries): list of dictionaries, where every article is a dictionary
+	
+	Returns:
+	----------
+	* (dictionary of dictionaries of dictionaries): dictionary of laws, where every law is a dictionary with a dictionary of articles
+	'''
     law_dict = {}
     law_ID = article_list[0]['law_ID']
     law_dict[law_ID] = {'law_num':article_list[0]['law_num'], 'law_name':article_list[0]['law'],
@@ -103,12 +156,31 @@ def list_to_dict(article_list):
 
 
 def load_link():
+    '''
+	Loads Link type
+	
+	Parameters: 
+	-------------
+	None
+	
+	Returns:
+	-----------
+	* (Link): link for article(law name or law number and article number)
+	'''
     with open("./links_example", "rb") as f:
         links_example = pickle.load(f)
         return(links_example)
 
 
 def link_to_article_ID(link, article_dict):
+    '''
+	Gets article ID 
+	
+	Parameters:
+	------------
+	*link (Link): link for article(law name or law number and article number)
+	*article_dict (dictionary of dictionaries of dictionaries)
+	'''
     article_ID = ''
     number = link.law_num
     name = link.law_name
