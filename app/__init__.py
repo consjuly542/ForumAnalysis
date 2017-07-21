@@ -17,10 +17,6 @@ def not_found(error):
 def index():
     return render_template('home.html')
 
-@app.route('/fun')
-def fun():
-    return render_template('fun.html')
-
 from app.module.StatisticsWeb import statistics_page
 app.register_blueprint(statistics_page, url_prefix='/statistics')
 

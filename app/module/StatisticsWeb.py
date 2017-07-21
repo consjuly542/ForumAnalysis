@@ -6,8 +6,7 @@ sys.path.append(os.path.join(ROOT_DIR, 'source/'))
 import json
 
 from source.StatisticsModule import StatisticsModule
-
-from source.ArticleStatistics import ArticleStatistics
+from source.ArticleStatistics import get_questions
 
 import re
 import _pickle as pickle
@@ -32,9 +31,7 @@ def load_codex_list():
     return codex_list
 
 def load_art_questions(article_id):
-    data = None
-    with open(os.path.join(ROOT_DIR, 'data/statistics/article_questions/' + article_id), 'rb') as f_in:
-        data = pickle.load(f_in)
+    data = get_questions(os.path.join(ROOT_DIR, 'data/statistics/article_questions/' + article_id))
     return data
 
 @statistics_page.route('/', methods=['GET', 'POST'])
@@ -45,8 +42,9 @@ def get_view():
     if request.method == 'POST':
         req_data = request.get_json(force=True)
         r_rank = req_data['rank']
+        r_ascending = req_data['ascending']
         r_filters = req_data['filters']
-        stats_module.ranking_articles(rank_type=(r_rank if r_rank else 'by_cnt_questions'))
+        stats_module.ranking_articles(rank_type=(r_rank if r_rank else 'by_cnt_questions'), ascending=r_ascending)
         # Cancel prev. filters
         stats_module.cancel_filter('law')
         stats_module.cancel_filter('date')
@@ -56,7 +54,7 @@ def get_view():
                 stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
         data = get_data()
         try:
-            return render_template('Statistics/articles_data.html',data=data)
+            return render_template('Statistics/articles_data.html', data=data)
         except TemplateNotFound:
             abort(404)
     else:
@@ -69,15 +67,14 @@ def get_view():
             return render_template('Statistics/index.html', 
                                     data=render_template('Statistics/articles_data.html',data=data), 
                                     codex_list=codex_list, 
-                                    rank='by_cnt_questions')
+                                    rank='by_cnt_questions',
+                                    ascending=False)
         except TemplateNotFound:
             abort(404)
 
 @statistics_page.route('/<article_id>/questions')
 def art_questions(article_id):
     data = load_art_questions(article_id)
-    # TODO: REMOVE WHEN data is actually an array
-    data = [data]
     try:
         return render_template('Statistics/article_questions.html', data=data)
     except TemplateNotFound:

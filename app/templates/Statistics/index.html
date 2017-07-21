@@ -18,6 +18,10 @@
                                 <option value="by_date" {% if rank=='by_date' %}selected{% endif %}>По дате</option>
                                 <option value="by_sum_cnt_answers" {% if rank=='by_sum_cnt_answers' %}selected{% endif %}>По кол-ву ответов</option>
                             </select>
+                            <select class="form-control" id="ascending" name="ascending">
+                                <option value="1" {% if ascending==True %}selected{% endif %}>По возрастанию</option>
+                                <option value="0" {% if ascending==False %}selected{% endif %}>По убыванию</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -105,6 +109,9 @@
     $(document).on('change', '#rank_by', function() {
         $(this).closest('form').trigger('submit');
     });
+    $(document).on('change', '#ascending', function() {
+        $(this).closest('form').trigger('submit');
+    });
     $(document).on('change', '#filter_law', function() {
         $(this).closest('form').trigger('submit');
     });
@@ -112,6 +119,7 @@
         // Get form data
         var form_data = $(this).serializeArray();
         var rank = "by_cnt_questions";
+        var ascending = "0";
         var filters = [];
         $.each(form_data, function(index, item){
             var key = item['name'];
@@ -126,10 +134,13 @@
                 });
             } else if(key == 'rank') {
                 rank = value;
+            } else if(key == 'ascending') {
+                ascending = value;
             }
         });
         var req_data = {
             'rank': rank,
+            'ascending': Boolean(parseInt(ascending)),
             'filters': filters
         };
         console.log(req_data);

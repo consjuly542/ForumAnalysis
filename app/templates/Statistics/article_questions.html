@@ -14,7 +14,7 @@
                         <div class="col-lg-3 col-md-4 col-sm-4"><u>Просмотров:</u> {{ item['views_count'] }}</div>
                     </div>
                 </div>
-                <div class="card-text" style="display: block;">
+                <div class="card-text">
                     <hr/>
                     <div class="row">
                         <div class="col-lg-12">
@@ -40,4 +40,38 @@
     </div>
 </div>
 {% endfor %}
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.question-list').each(function(index) {
+            var questions = $(this).find('.item-question');
+            if(questions.length > 3) {
+                $(this).find('.toggle-questions').show();
+            }
+            $(this).find('.item-question').slice(0, 3).show();
+        });
+        // reload select values (they reset when using Back button in browser)
+        $("select").each(function () {
+            $(this).val($(this).find('option[selected]').val());
+        });
+    });
+    $(document).on('click', '.article-stats .card-block .block-header', function() {
+        var stats_block = $(this).closest('.article-stats');
+        var card_text = $(stats_block).find('.card-text');
+        // if active then remove active
+        if ($(stats_block).hasClass('active')) {
+            $(stats_block).removeClass('active');
+        } else { // if not active
+            // Mark as active
+            $(stats_block).addClass('active');
+            // Animate to active article
+            $('html, body').animate({
+                scrollTop: $(stats_block).offset().top
+            }, 500);
+        }
+        // Toggle full info about current article
+        $(card_text).slideToggle(500);
+    });
+</script>
 {% endblock %}
