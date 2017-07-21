@@ -187,7 +187,10 @@ def link_to_article_ID(link, article_dict):
 	Parameters:
 	------------
 	*link (Link): link for article(law name or law number and article number)
-	*article_dict (dictionary of dictionaries of dictionaries)
+	*article_dict (dictionary of dictionaries of dictionaries): dictionary of laws, where every law is a dictionary with a dictionary of articles
+	
+	Returns:
+	* (string): article ID
 	'''
     article_ID = ''
     number = link.law_num
@@ -209,6 +212,19 @@ def link_to_article_ID(link, article_dict):
 
 
 def law_searcher(number, name, a_dict):
+    '''
+	Searches law in the dictionary
+	
+	Parameters:
+	-------------
+	*number (string): law number
+	*name (string): law name
+	*a_dict (dictionary of dictionaries of dictionaries): dictionary of laws, where every law is a dictionary with a dictionary of articles
+	
+	Returns:
+	----------
+	* (string): law ID
+	'''
     ID = ''
     if name:
         name = full_codec_name(name)
@@ -228,6 +244,18 @@ def law_searcher(number, name, a_dict):
 
 
 def ID_to_Article(article_ID, article_list):
+    '''
+	Gets article from ID
+	
+	Parameters:
+	-------------
+	*article_ID (string): article ID
+	*article_list (list of dictionaries): list of dictionaries, where every article is a dictionary
+	
+	Returns:
+	---------
+	* (Article): article information
+	'''
     a = Article()
     for art in article_list:
         if article_ID == art['article_ID']:
