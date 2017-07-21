@@ -54,7 +54,7 @@ def get_view(save_options=False):
                 stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
         data = get_data()
         try:
-            return render_template('Statistics/articles_data.html', data=data, enumerate=enumerate, len=len)
+            return render_template('Statistics/articles_data.html', data=data, items=dict.items, len=len)
         except TemplateNotFound:
             abort(404)
     else:
@@ -66,7 +66,7 @@ def get_view(save_options=False):
         data = get_data()
         try:
             return render_template('Statistics/index.html',
-                                    data=render_template('Statistics/articles_data.html', data=data, enumerate=enumerate, len=len),
+                                    data=render_template('Statistics/articles_data.html', data=data, items=dict.items, len=len),
                                     codex_list=codex_list,
                                     rank='by_cnt_questions',
                                     ascending=False)
