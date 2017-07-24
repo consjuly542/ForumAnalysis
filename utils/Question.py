@@ -48,7 +48,7 @@ class Question:
 
     def to_dict(self):
 	    '''
-		Convert from Question to dictionary
+		Converts from Question to dictionary
 		'''
         return self.__dict__
 

@@ -1,3 +1,5 @@
+'''Script for loading question type'''
+
 from Question import Question9111
 from Question import QuestionKlerk
 
@@ -8,6 +10,17 @@ import glob
 
 
 def load_data(dirpath='./data/processed'):
+    '''
+	Loads data Question's type
+	
+	Parameters:
+	-------------
+	*dirpath (string): path to directory of file
+	
+	Returns:
+	-------------
+	* (list of Question type): list of questions
+	'''
     question_list = []
     for filename in os.listdir(dirpath)[:120]:
         filepath = os.path.join(dirpath, filename)
@@ -37,6 +50,17 @@ def load_data(dirpath='./data/processed'):
     return question_list
 
 def loadDataGenerator(dirpath = '../data/processed'):
+    '''
+	Loads data Question's type in generator
+	
+	Parameters:
+	-------------
+	*dirpath (string): path to directory of file
+	
+	Returns:
+	-------------
+	* (generator of Question type): list of questions
+	'''
     listdir = os.listdir(dirpath)
     cur_file = 0
     batch_size = 1
