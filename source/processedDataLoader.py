@@ -42,9 +42,9 @@ def loadDataGenerator(dirpath = '../data/processed'):
     batch_size = 1
     if "klerk" in listdir:
         listdir.remove("klerk")
-    klerk_file = glob.glob('../data/processed/klerk/**/*.txt', \
+    klerk_file = glob.glob('../data/processed/klerk/*', \
         recursive=True)
-    # print (len(klerk_file))
+    print (len(klerk_file))
     listdir += klerk_file
     listdir = listdir
     while cur_file < len(listdir):

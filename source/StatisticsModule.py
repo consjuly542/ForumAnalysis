@@ -33,14 +33,17 @@ def data2dict(s_data):
     """
     data = copy(s_data)
     for i, d in enumerate(data):
-        for j, dt in enumerate(data[i].dates):
-            data[i].dates[j] = convert_date(dt)
-        data[i].last_date = convert_date(data[i].last_date)
-        data[i].first_date = convert_date(data[i].first_date)
-        data[i].official_article.date = convert_date(data[i].official_article.date)
-        data[i].official_article.edit_date = convert_date(data[i].official_article.edit_date)
-        data[i].official_article = d.official_article.__dict__
-        data[i] = d.__dict__
+        if d:
+            for j, dt in enumerate(data[i].dates):
+                data[i].dates[j] = convert_date(dt)
+            data[i].last_date = convert_date(data[i].last_date)
+            data[i].first_date = convert_date(data[i].first_date)
+            data[i].official_article.date = convert_date(data[i].official_article.date)
+            data[i].official_article.edit_date = convert_date(data[i].official_article.edit_date)
+            data[i].official_article = d.official_article.__dict__
+            data[i] = d.__dict__
+        else:
+            print( d.to_dict())
     return data
 
 
@@ -66,7 +69,7 @@ def convert_date(dt):
     return str(dt)
 
 
-def write_current_article_list(articles_list, cnt_visible_article=50):
+def write_current_article_list(articles_list, cnt_visible_article=70):
     """
     Writing top = cnt_visible_article articles, 
     which user want to see, to a file.
@@ -130,6 +133,11 @@ class StatisticsModule(object):
         # filters list
         self.filters_type = []
         self.filters_data = []
+
+        with open("../data/processed_articles/guide_article_ID", "rb") as f:
+            self.ids_in_guides = cPickle.load(f)
+
+        # print (len(self.ids_in_guides))
 
         # default - ranked by cnt_questions, no filters
         self.ranking_articles(rank_type='by_cnt_questions')
@@ -215,13 +223,15 @@ class StatisticsModule(object):
     def add_filter(self, filter_type, filter_data):
         """
         add filter by data or law
-        filter_type = 'law' or 'date'
+        filter_type = 'law' or 'date' or 'not_in_guide'
         date = "day-month-year"
         фильтр по дате - оставляю только те статьи,
         упоминание о котором есть позднее указанного числа
+        фильтр 'not_in_guide' - отсеивает те, на которые есть ссылки из путеводителей
         if filter by date: filter_data is string: "year.month.day"
         if filter by law: filter_data - law name (ex. "Гражданский кодекс") -
         """
+
         if filter_type in self.filters_type:
             pass
         else:
@@ -237,6 +247,12 @@ class StatisticsModule(object):
 
                 self.cur_articles_list = [article for article in self.cur_articles_list \
                                           if article.last_date >= filter_date]
+
+            if filter_type == 'notInGuide':
+                self.cur_articles_list = [article for article in self.cur_articles_list\
+                                         if article.official_article.article_ID not in self.ids_in_guides]
+                print( len(self.cur_articles_list))
+
 
             self.filters_type.append(filter_type)
             self.filters_data.append(filter_data)
@@ -255,7 +271,9 @@ class StatisticsModule(object):
         write_current_article_list(self.cur_articles_list)
 
 # index = StatisticsModule(recompute_statistics = True)
-# index = StatisticsModule(recompute_statistics = False).get_graphics()
+# index = StatisticsModule(recompute_statistics = False)
+
+index = StatisticsModule(recompute_statistics = False).get_graphics()
 # index.add_filter(filter_type='law', filter_data = 'гражданский кодекс')
 
 # # print(len(index.article_index))

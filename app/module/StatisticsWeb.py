@@ -92,9 +92,11 @@ def get_view(save_options=False):
         # Cancel prev. filters
         stats_module.cancel_filter('law')
         stats_module.cancel_filter('date')
+        stats_module.cancel_filter('not_in_guide')
 
         if r_filters:
             for filt in r_filters:
+                print (filt['filter_type'])
                 stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
         data = get_data()
         try:
@@ -107,6 +109,7 @@ def get_view(save_options=False):
             stats_module.ranking_articles()
             stats_module.cancel_filter('law')
             stats_module.cancel_filter('date')
+            stats_module.cancel_filter('not_in_guide')
         codex_list = load_codex_list()
         data = get_data()
         try:

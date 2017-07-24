@@ -39,6 +39,17 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <div class="row">
+                        <label for="filter_not_in_guide" class="col-sm-4 col-form-label">Освещенность в К+</label>
+                        <div class="col-sm-12">
+                            <select class="form-control" id="filter_notInGuide" name="filter_notInGuide">
+                                <option value="1" {% if all_articles==True %}selected{% endif %}>Все статьи</option>
+                                <option value="0" {% if all_articles==False %}selected{% endif %}>Нет в путеводителях</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="input-group date" id="datepicker">
                         <input type="text" class="form-control" placeholder="Дата от" id="filter_date" name="filter_date">
                         <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
@@ -102,6 +113,9 @@
     $(document).on('change', '#filter_law', function() {
         $(this).closest('form').trigger('submit');
     });
+    $(document).on('change', '#filter_notInGuide', function() {
+        $(this).closest('form').trigger('submit');
+    });
     // handler: filters and rank form submit
     $(document).on('submit', '#rank_and_filters', function(evt) {
         $(document).find('#articles').html(`<p align="center">Идет загрузка...</p>`);
@@ -151,6 +165,7 @@
     // handler: clear filters button
     $(document).on('click', '#clear_filters', function() {
         $('#filter_law').val($("#filter_law option:first").val());
+        $('#filter_notInGuide').val($("#ffilter_notInGuide option:first").val());
         $('#filter_date').val("");
         $(this).closest('div').find('form').trigger('submit');
     });
