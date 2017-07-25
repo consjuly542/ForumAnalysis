@@ -26,4 +26,4 @@ app.register_blueprint(statistics_page, url_prefix='/statistics')
 from app.module.ArticlesWeb import articles_page
 app.register_blueprint(articles_page, url_prefix='/articles')
 
-app.run(host="0.0.0.0", port="3030")
+app.run(debug=True, host='0.0.0.0', port=8097)
