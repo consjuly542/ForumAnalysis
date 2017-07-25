@@ -19,7 +19,6 @@ statistics_page = Blueprint('statistics_page', __name__,
                             template_folder='templates')
 
 stats_module = StatisticsModule()
-data = []
 
 # def get_data():
 #     '''
@@ -83,7 +82,6 @@ def get_view(save_options=False):
     # -> rank: (string)
     # -> ascending: (boolean)
     # -> filters: [{'filter_type': (string), 'filter_data': (string)}]
-    global data
     if request.method == 'POST':
         req_data = request.get_json(force=True)
         r_rank = req_data['rank']
@@ -137,15 +135,16 @@ def get_view(save_options=False):
 def art_questions(article_id):
     # Find article info by its article_ID
     # data = get_data()
-    global data
-    art_data = None
-    for item in data:
-        if item.official_article.article_ID == article_id:
-            art_data = item
-            break
-    q_data = load_art_questions(article_id)
+    # global data
+    # art_data = None
+    # for item in stats_module.cur_articles_list:
+    #     if item['official_article']['article_ID'] == article_id:
+    #         art_data = item
+    #         break
+    art_data = stats_module.article_index[article_id]
+    data = load_art_questions(article_id)
     try:
         # returns rendered html template with data
-        return render_template('Statistics/article_questions.html', data=q_data, info=art_data)
+        return render_template('Statistics/article_questions.html', data=data, info=art_data)
     except TemplateNotFound:
         abort(404)
