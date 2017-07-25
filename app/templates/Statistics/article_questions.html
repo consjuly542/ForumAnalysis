@@ -18,8 +18,14 @@
             <div class="card-block">
                 <div class="block-header">
                     <h4 class="card-title">
-                        {{ item['question_title'] }}
+		        {% if item['questionID']%}
+                        {{ item['question_title'] }} <i class="cons-link"><a href="https://www.9111.ru/questions/{{item ['questionID']}}" target="_blank"> (ссылка на www.9111.ru)</a></i>
+			{% endif %}
+		        {% if item['idx']%}
+                        {{ item['question_title'] }} <i class="cons-link"><a href="http://forum.klerk.ru/showthread.php?t={{item['idx']}}" target="_blank"> (ссылка на forum.klerk.ru)</a></i>
+			{% endif %}
                     </h4>
+		
                     <h6 class="card-subtitle mb-2 text-muted">{{ item['date'] }}</h6>
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-4"><b>Просмотров:</b> {{ item['views_count'] }}</div>
