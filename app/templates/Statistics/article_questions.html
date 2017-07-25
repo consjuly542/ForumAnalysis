@@ -19,10 +19,10 @@
                 <div class="block-header">
                     <h4 class="card-title">
 		        {% if item['questionID']%}
-                        {{ item['question_title'] }} <i class="cons-link"><a href="https://www.9111.ru/questions/{{item ['questionID']}}" target="_blank"> (ссылка на форум)</a></i>
+                        {{ item['question_title'] }} <i class="cons-link"><a href="https://www.9111.ru/questions/{{item ['questionID']}}" target="_blank"> (ссылка на www.9111.ru)</a></i>
 			{% endif %}
 		        {% if item['idx']%}
-                        {{ item['question_title'] }} <i class="cons-link"><a href="http://forum.klerk.ru/showthread.php?t={{item['idx']}}" target="_blank"> (ссылка на форум)</a></i>
+                        {{ item['question_title'] }} <i class="cons-link"><a href="http://forum.klerk.ru/showthread.php?t={{item['idx']}}" target="_blank"> (ссылка на forum.klerk.ru)</a></i>
 			{% endif %}
                     </h4>
 		
