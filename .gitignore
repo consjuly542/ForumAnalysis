@@ -104,3 +104,5 @@ ENV/
 
 # Exclude article_questions
 article_questions/
+data/
+app/static/
