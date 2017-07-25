@@ -14,7 +14,7 @@ from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 from datetime import date
-from PlotsMaker import plot_dates
+#from PlotsMaker import plot_dates
 
 
 def data2dict(s_data):
