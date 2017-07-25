@@ -88,30 +88,32 @@ def get_view(save_options=False):
         r_rank = req_data['rank']
         r_ascending = req_data['ascending']
         r_filters = req_data['filters']
-        stats_module.ranking_articles(rank_type=(r_rank if r_rank else 'by_cnt_questions'), ascending=r_ascending)
-        # Cancel prev. filters
-        stats_module.cancel_filter('law')
-        stats_module.cancel_filter('date')
-        stats_module.cancel_filter('not_in_guide')
+        # stats_module.ranking_articles(rank_type=(r_rank if r_rank else 'by_cnt_questions'), ascending=r_ascending)
+        # # Cancel prev. filters
+        # stats_module.cancel_filter('law')
+        # stats_module.cancel_filter('date')
+        # stats_module.cancel_filter('not_in_guide')
 
-        if r_filters:
-            for filt in r_filters:
-                print (filt['filter_type'])
-                stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
-        data = get_data()
+        # if r_filters:
+        #     for filt in r_filters:
+        #         # print (filt['filter_type'])
+        #         stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
+        data = stats_module.apply_rank_and_filters(r_rank, r_ascending, r_filters)
+        # data = get_data()
         try:
             # returns rendered html template with data
             return render_template('Statistics/articles_data.html', data=data, items=dict.items, len=len)
         except TemplateNotFound:
             abort(404)
     else:
-        if not save_options:
-            stats_module.ranking_articles()
-            stats_module.cancel_filter('law')
-            stats_module.cancel_filter('date')
-            stats_module.cancel_filter('not_in_guide')
+        # if not save_options:
+        #     stats_module.ranking_articles()
+        #     stats_module.cancel_filter('law')
+        #     stats_module.cancel_filter('date')
+        #     stats_module.cancel_filter('not_in_guide')
         codex_list = load_codex_list()
-        data = get_data()
+        # data = get_data()
+        data = stats_module.apply_rank_and_filters()
         try:
             # returns rendered html template with data
             return render_template('Statistics/index.html',
