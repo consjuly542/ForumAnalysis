@@ -14,7 +14,7 @@ from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 from datetime import date
-from PlotsMaker import plot_dates
+# from PlotsMaker import plot_dates
 
 
 def data2dict(s_data):
@@ -125,10 +125,10 @@ class StatisticsModule(object):
         self.get_article_statistics(recompute_statistics=recompute_statistics)
         # list which users see
         self.cur_articles_list = list(self.article_index.values())
-        self.cur_articles_list = [a for a in self.cur_articles_list if a.questions_cnt > 0]
+        self.cur_articles_list = [a for a in self.cur_articles_list if a.questions_cnt > 0 and a.official_article]
         # ranking list of articles without filters - for fast execution
-        self.articles_list_all = list(self.article_index.values())
-        self.articles_list_all = [a for a in self.articles_list_all if a.questions_cnt > 0]
+        # self.articles_list_all = list(self.article_index.values())
+        # self.articles_list_all = [a for a in self.articles_list_all if a.questions_cnt > 0]
 
         # filters list
         self.filters_type = []
@@ -193,6 +193,9 @@ class StatisticsModule(object):
         """
         filters_list = [{'filter_type': (string), 'filter_data': (string)}]
         """
+        for a in self.cur_articles_list:
+            if not a:
+                print ("NONE IN RAW ARTICLES")
         print (rank_type, ascending, filters_list)
         cnt_visible_article = 70
         new_articles_list = copy(self.cur_articles_list)
@@ -201,25 +204,29 @@ class StatisticsModule(object):
         for filt in filters_list:
             new_articles_list = self.add_filter(new_articles_list, filt['filter_type'], filt['filter_data'])
 
-        return new_articles_list[:cnt_visible_article]
+        for a in new_articles_list:
+            if not a:
+                print ("NONE IN NEW ARTICLES")
+
+        return new_articles_list[:cnt_visible_article], len(new_articles_list)
 
 
     def ranking_articles(self, articles_list, rank_type='by_cnt_questions', ascending = False):
         if rank_type == 'by_cnt_questions':
             articles_list = sorted(articles_list, \
                                             key=operator.attrgetter('questions_cnt'), reverse=not ascending)
-            articles_list = sorted(articles_list, \
-                                            key=operator.attrgetter('questions_cnt'), reverse=not ascending)
+            # articles_list = sorted(articles_list, \
+            #                                 key=operator.attrgetter('questions_cnt'), reverse=not ascending)
         elif rank_type == 'by_sum_cnt_answers':
             articles_list = sorted(articles_list, key=operator.attrgetter('sum_answers_cnt'),
                                             reverse=not ascending)
-            articles_list = sorted(articles_list, key=operator.attrgetter('sum_answers_cnt'),
-                                            reverse=not ascending)
+            # articles_list = sorted(articles_list, key=operator.attrgetter('sum_answers_cnt'),
+            #                                 reverse=not ascending)
         elif rank_type == 'by_date':
             articles_list = sorted(articles_list, \
                                             key=operator.attrgetter('last_date'), reverse=not ascending)
-            articles_list = sorted(articles_list, key=operator.attrgetter('last_date'), \
-                                            reverse=not ascending)
+            # articles_list = sorted(articles_list, key=operator.attrgetter('last_date'), \
+            #                                 reverse=not ascending)
 
         return articles_list
         # write_current_article_list(self.cur_articles_list)
@@ -270,8 +277,8 @@ class StatisticsModule(object):
             print( len(articles_list))
 
 
-        self.filters_type.append(filter_type)
-        self.filters_data.append(filter_data)
+        # self.filters_type.append(filter_type)
+        # self.filters_data.append(filter_data)
 
         return articles_list
             # write_current_article_list(self.cur_articles_list)
