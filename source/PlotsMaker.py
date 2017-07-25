@@ -10,32 +10,46 @@ import pandas as pd
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-
-def plot_dates(data, path, x_label='временной интервал', y_label='всего упоминаний', title=''):
+def plot_dates(data, path):
+    plt.gca().yaxis.grid(True)
     plt.style.use('seaborn-ticks')
     plt.style.use('seaborn-colorblind')
-    _, ax = plt.subplots()
-    ax.hist(data, alpha=0.75, color="#0072B2", linewidth=0.5, bins=12, edgecolor='white')
-    ax.set_ylabel(y_label)
-    ax.set_xlabel(x_label)
-    ax.set_title(title)
-    plt.gca().yaxis.grid(True)
+    plt.style.use('seaborn-ticks')
     
-    plt.tick_params(axis="x", which="major", bottom="off", top="off",    
-              labelbottom="off", left="off", right="off", labelleft="off") 
-   
-    myFmt = mdates.DateFormatter('%d/%m')
-    ax.xaxis.set_major_formatter(myFmt)
-    plt.gcf().autofmt_xdate()
-    
+    ax = plt.subplot(111)  
+    plt.tick_params(axis="x", which="both", bottom="off", top="off",    
+                   labelbottom="off", left="off", right="off", labelleft="off") 
+    ax.set_ylabel('всего упоминаний')
+    ax.set_xlabel('временной интервал')
+    ax.yaxis.set_ticks_position('none') 
+
     ax.get_xaxis().tick_bottom()    
     ax.get_yaxis().tick_left()  
 
     ax.spines["top"].set_visible(False)    
     ax.spines["bottom"].set_visible(False)    
     ax.spines["right"].set_visible(False)    
-    ax.spines["left"].set_visible(False) 
+    ax.spines["left"].set_visible(False)   
 
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+       
+    if len(Counter(data)) > 5:
+        ax.hist(data, alpha=0.75, color="#0072B2", linewidth=0.5, bins=12, edgecolor='white')  
+    else:
+        c = dict(Counter(data))  
+        l = sorted(c.keys())  
+        x, y = zip(*sorted(Counter(data).items(), key = operator.itemgetter(0),reverse = True))
+
+        base = l[0]
+        x = [base+datetime.timedelta(days=x) for x in range(-5, (l[-1:][0] - base).days+5)]
+        y = [c[x1] if x1 in c else 0 for x1 in x]
+        maxy = max(y)
+        plt.ylim(0, maxy+1)
+        plt.bar(x, y, linewidth=1, color="#0072B2",edgecolor="#0072B2", alpha=0.75)
+
+    myFmt = mdates.DateFormatter('%d/%m')
+    ax.xaxis.set_major_formatter(myFmt)
+    plt.gcf().autofmt_xdate()
     plt.savefig(path+".png")
     plt.close('all')
     
