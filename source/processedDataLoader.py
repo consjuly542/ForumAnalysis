@@ -1,4 +1,5 @@
 '''Script for loading question type'''
+# -*- coding: utf-8 -*-
 
 from Question import Question9111
 from Question import QuestionKlerk
@@ -104,7 +105,6 @@ def loadDataGenerator(dirpath = '../data/processed'):
                     q.question_href_ref = d['question_href_ref']
                     q.question_href_txt = d['question_href_txt']
 
-                    #не баг, а фича
                     q.answers_href_ref = d['answers_href_txt']
                     q.answers_href_txt = d['answers_href_ref']
                     q.answers = d['answers']

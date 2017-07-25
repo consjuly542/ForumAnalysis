@@ -37,6 +37,7 @@ def plot_dates(data, path, x_label='временной интервал', y_labe
     ax.spines["left"].set_visible(False) 
 
     plt.savefig(path+".png")
+    plt.close('all')
     
 def test(path):
     data = [date(2017, random.randint(1, 12), random.randint(1, 28)) for i in range(2000)]  

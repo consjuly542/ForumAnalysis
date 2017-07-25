@@ -79,6 +79,7 @@ class ArticleStatistics (object):
 			self.last_date = q_date
 
 
+
 	def to_dict(self):
 		return self.__dict__
 

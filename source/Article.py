@@ -15,6 +15,8 @@ class Article:
         self.law_ID = None
         self.article_ID = None           #law_ID + '_' + article_num
         self.article_link = None
+        self.guide_name = None
+        self.guide_link = None
 
     def to_dict(self):
         return self.__dict__

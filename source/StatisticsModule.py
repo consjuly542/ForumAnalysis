@@ -140,7 +140,7 @@ class StatisticsModule(object):
         # print (len(self.ids_in_guides))
 
         # default - ranked by cnt_questions, no filters
-        self.ranking_articles(rank_type='by_cnt_questions')
+        # self.ranking_articles(rank_type='by_cnt_questions')
 
     def get_article_index(self):
         """
@@ -189,38 +189,54 @@ class StatisticsModule(object):
             with open("./../data/statistics/article_statistics", "rb") as f:
                 self.article_index = cPickle.load(f)
 
-    def ranking_articles(self, rank_type='by_cnt_questions', ascending = False):
+    def apply_rank_and_filters(self, rank_type = 'by_cnt_questions', ascending = False, filters_list = {}):
+        """
+        filters_list = [{'filter_type': (string), 'filter_data': (string)}]
+        """
+        print (rank_type, ascending, filters_list)
+        cnt_visible_article = 70
+        new_articles_list = copy(self.cur_articles_list)
+        new_articles_list = self.ranking_articles(new_articles_list, rank_type, ascending)
+        # print new_articles_list
+        for filt in filters_list:
+            new_articles_list = self.add_filter(new_articles_list, filt['filter_type'], filt['filter_data'])
+
+        return new_articles_list[:cnt_visible_article]
+
+
+    def ranking_articles(self, articles_list, rank_type='by_cnt_questions', ascending = False):
         if rank_type == 'by_cnt_questions':
-            self.cur_articles_list = sorted(self.cur_articles_list, \
+            articles_list = sorted(articles_list, \
                                             key=operator.attrgetter('questions_cnt'), reverse=not ascending)
-            self.articles_list_all = sorted(self.articles_list_all, \
+            articles_list = sorted(articles_list, \
                                             key=operator.attrgetter('questions_cnt'), reverse=not ascending)
         elif rank_type == 'by_sum_cnt_answers':
-            self.cur_articles_list = sorted(self.cur_articles_list, key=operator.attrgetter('sum_answers_cnt'),
+            articles_list = sorted(articles_list, key=operator.attrgetter('sum_answers_cnt'),
                                             reverse=not ascending)
-            self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('sum_answers_cnt'),
+            articles_list = sorted(articles_list, key=operator.attrgetter('sum_answers_cnt'),
                                             reverse=not ascending)
         elif rank_type == 'by_date':
-            self.cur_articles_list = sorted(self.cur_articles_list, \
+            articles_list = sorted(articles_list, \
                                             key=operator.attrgetter('last_date'), reverse=not ascending)
-            self.articles_list_all = sorted(self.articles_list_all, key=operator.attrgetter('last_date'), \
+            articles_list = sorted(articles_list, key=operator.attrgetter('last_date'), \
                                             reverse=not ascending)
 
-        write_current_article_list(self.cur_articles_list)
+        return articles_list
+        # write_current_article_list(self.cur_articles_list)
 
     def get_graphics(self, dirpath = "../app/static/article_pics/"):
         with open("./../data/statistics/article_statistics", "rb") as f:
             self.article_index = cPickle.load(f)
 
         for idx, article_ID in enumerate(self.article_index.keys()):
-            # sys.stderr.write("\r %d / %d" % (idx, len(list(self.article_index.keys()))))
+            sys.stderr.write("\r %d / %d" % (idx, len(list(self.article_index.keys()))))
             if len(self.article_index[article_ID].dates) >= 1:
-                print (self.article_index[article_ID].dates[:10])
+                # print (self.article_index[article_ID].dates[:10])
                 plot_dates(self.article_index[article_ID].dates, dirpath + article_ID)
 
 
 
-    def add_filter(self, filter_type, filter_data):
+    def add_filter(self, articles_list, filter_type, filter_data):
         """
         add filter by data or law
         filter_type = 'law' or 'date' or 'not_in_guide'
@@ -232,32 +248,33 @@ class StatisticsModule(object):
         if filter by law: filter_data - law name (ex. "Гражданский кодекс") -
         """
 
-        if filter_type in self.filters_type:
-            pass
-        else:
-            if filter_type == 'law':
-                self.cur_articles_list = [article for article in self.cur_articles_list \
-          					if article.official_article.law.strip().lower() == filter_data.strip().lower()]
+        # if filter_type in self.filters_type:
+            # pass
+        # else:
+        if filter_type == 'law':
+            articles_list = [article for article in articles_list \
+      					if article.official_article.law.strip().lower() == filter_data.strip().lower()]
 
-            if filter_type == 'date':
-                date_parts = filter_data.strip().split(".")
-                filter_date = date(int(date_parts[2]), \
-                                   int(date_parts[1]), \
-                                   int(date_parts[0]))
+        if filter_type == 'date':
+            date_parts = filter_data.strip().split(".")
+            filter_date = date(int(date_parts[2]), \
+                               int(date_parts[1]), \
+                               int(date_parts[0]))
 
-                self.cur_articles_list = [article for article in self.cur_articles_list \
-                                          if article.last_date >= filter_date]
+            articles_list = [article for article in articles_list \
+                                      if article.last_date >= filter_date]
 
-            if filter_type == 'notInGuide':
-                self.cur_articles_list = [article for article in self.cur_articles_list\
-                                         if article.official_article.article_ID not in self.ids_in_guides]
-                print( len(self.cur_articles_list))
+        if filter_type == 'notInGuide' and filter_data == "0":
+            articles_list = [article for article in articles_list\
+                                     if article.official_article.article_ID not in self.ids_in_guides]
+            print( len(articles_list))
 
 
-            self.filters_type.append(filter_type)
-            self.filters_data.append(filter_data)
+        self.filters_type.append(filter_type)
+        self.filters_data.append(filter_data)
 
-            write_current_article_list(self.cur_articles_list)
+        return articles_list
+            # write_current_article_list(self.cur_articles_list)
 
     def cancel_filter(self, filter_type):
         if filter_type in self.filters_type:
@@ -273,7 +290,7 @@ class StatisticsModule(object):
 # index = StatisticsModule(recompute_statistics = True)
 # index = StatisticsModule(recompute_statistics = False)
 
-index = StatisticsModule(recompute_statistics = False).get_graphics()
+# index = StatisticsModule(recompute_statistics = False).get_graphics()
 # index.add_filter(filter_type='law', filter_data = 'гражданский кодекс')
 
 # # print(len(index.article_index))

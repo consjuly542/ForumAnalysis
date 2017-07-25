@@ -7,12 +7,13 @@ import _pickle as cPickle
 import pickle
 
 files = os.listdir("../data/processed_articles/")
+files.remove("guide_article_ID")
 articles = load_file_article.load_data()
-processed_articles = []
 cnt_not_match_links = 0
 links_cnt = 0
 l2a = Link2Article()
 for filename in files:
+	processed_articles = []
 	with open("../data/processed_articles/" + filename, encoding = 'utf-8') as f:
 		for line in f:
 			# print (line)
@@ -29,4 +30,4 @@ for filename in files:
 
 			sys.stderr.write("\r\t\t\t\t\tALL LINKS: %d; CAN't MATCH: %d" % (links_cnt, cnt_not_match_links))
 
-cPickle.dump(processed_articles, open("../data/processed_articles/guide_article_ID", "wb"))
+	cPickle.dump(processed_articles, open("../data/processed_articles/article_ID_" + filename[:-4], "wb"))
