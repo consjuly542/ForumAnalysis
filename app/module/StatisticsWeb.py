@@ -19,24 +19,24 @@ statistics_page = Blueprint('statistics_page', __name__,
                             template_folder='templates')
 
 stats_module = StatisticsModule()
+data = []
 
+# def get_data():
+#     '''
+#     Gets data from file with articles
 
-def get_data():
-    '''
-    Gets data from file with articles
+#     Parameters
+#     ------------
+#         None
 
-    Parameters
-    ------------
-        None
-
-    Returns
-    ------------
-    * data: Array of data objects (ArticleStatistics dicts)
-    '''
-    data = None
-    with open(os.path.join(ROOT_DIR, 'data/statistics/current_article_list'), 'rb') as f_in:
-        data = pickle.load(f_in)
-    return data
+#     Returns
+#     ------------
+#     * data: Array of data objects (ArticleStatistics dicts)
+#     '''
+#     data = None
+#     with open(os.path.join(ROOT_DIR, 'data/statistics/current_article_list'), 'rb') as f_in:
+#         data = pickle.load(f_in)
+#     return data
 
 
 def load_codex_list():
@@ -83,6 +83,7 @@ def get_view(save_options=False):
     # -> rank: (string)
     # -> ascending: (boolean)
     # -> filters: [{'filter_type': (string), 'filter_data': (string)}]
+    global data
     if request.method == 'POST':
         req_data = request.get_json(force=True)
         r_rank = req_data['rank']
@@ -98,11 +99,15 @@ def get_view(save_options=False):
         #     for filt in r_filters:
         #         # print (filt['filter_type'])
         #         stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
-        data = stats_module.apply_rank_and_filters(r_rank, r_ascending, r_filters)
+
+        data, cnt_articles = stats_module.apply_rank_and_filters(r_rank, r_ascending, r_filters)
         # data = get_data()
+        print ("CNT_ARTICLES", cnt_articles)
         try:
             # returns rendered html template with data
-            return render_template('Statistics/articles_data.html', data=data, items=dict.items, len=len)
+            return render_template('Statistics/articles_data.html', data=data, \
+                                    items=dict.items, len=len)
+
         except TemplateNotFound:
             abort(404)
     else:
@@ -113,7 +118,8 @@ def get_view(save_options=False):
         #     stats_module.cancel_filter('not_in_guide')
         codex_list = load_codex_list()
         # data = get_data()
-        data = stats_module.apply_rank_and_filters()
+        data, cnt_articles = stats_module.apply_rank_and_filters()
+        print ("CNT_ARTICLES", cnt_articles)
         try:
             # returns rendered html template with data
             return render_template('Statistics/index.html',
@@ -121,7 +127,8 @@ def get_view(save_options=False):
                                                         items=dict.items, len=len),
                                    codex_list=codex_list,
                                    rank='by_cnt_questions',
-                                   ascending=False)
+                                   ascending=False, 
+                                   cnt_articles = cnt_articles)
         except TemplateNotFound:
             abort(404)
 
@@ -129,15 +136,16 @@ def get_view(save_options=False):
 @statistics_page.route('/<article_id>/questions')
 def art_questions(article_id):
     # Find article info by its article_ID
-    data = get_data()
+    # data = get_data()
+    global data
     art_data = None
     for item in data:
-        if item['official_article']['article_ID'] == article_id:
+        if item.official_article.article_ID == article_id:
             art_data = item
             break
-    data = load_art_questions(article_id)
+    q_data = load_art_questions(article_id)
     try:
         # returns rendered html template with data
-        return render_template('Statistics/article_questions.html', data=data, info=art_data)
+        return render_template('Statistics/article_questions.html', data=q_data, info=art_data)
     except TemplateNotFound:
         abort(404)
