@@ -14,7 +14,8 @@ from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 from datetime import date
-# from PlotsMaker import plot_dates
+from PlotsMaker import plot_dates
+from guides import Guide
 
 
 def data2dict(s_data):
@@ -134,7 +135,7 @@ class StatisticsModule(object):
         self.filters_type = []
         self.filters_data = []
 
-        with open("../data/processed_articles/guide_article_ID", "rb") as f:
+        with open("../data/guide_articles/guide_article_ID", "rb") as f:
             self.ids_in_guides = cPickle.load(f)
 
         # print (len(self.ids_in_guides))
@@ -237,6 +238,11 @@ class StatisticsModule(object):
 
         for idx, article_ID in enumerate(self.article_index.keys()):
             sys.stderr.write("\r %d / %d" % (idx, len(list(self.article_index.keys()))))
+            if "19671_220" == article_ID:
+                with open("./logs", "w") as f:
+                    for d in self.article_index[article_ID].dates:
+                        f.write(str(d) + "\n")
+                return
             if len(self.article_index[article_ID].dates) >= 1:
                 # print (self.article_index[article_ID].dates[:10])
                 plot_dates(self.article_index[article_ID].dates, dirpath + article_ID)
