@@ -84,7 +84,7 @@ class ArticleStatistics (object):
 		return self.__dict__
 
 
-def get_questions(questions_filename, cnt_visible_question = 500):
+def get_questions(questions_filename, cnt_visible_question = 300):
 	"""
 	Get list of questions dict from file
 	"""

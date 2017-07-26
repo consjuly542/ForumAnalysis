@@ -32,11 +32,11 @@ def plot_dates(data, path):
     ax.spines["left"].set_visible(False)   
 
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-	if len(Counter(data)) > 2:
-		data = [d for d in data if d.year>2015]
+    if len(Counter(data)) > 2:
+        data = [d for d in data if d.year > 2015]
         ax.hist(data, alpha=0.75, color="#0072B2", linewidth=0.5, bins=12, edgecolor='white')  
     else:
-		c = dict(Counter(data))  
+        c = dict(Counter(data))  
         l = sorted(c.keys())  
         x, y = zip(*sorted(Counter(data).items(), key = operator.itemgetter(0),reverse = True))
 
@@ -47,7 +47,7 @@ def plot_dates(data, path):
         plt.ylim(0, maxy+1)
         plt.bar(x, y, linewidth=1, color="#0072B2",edgecolor="#0072B2", alpha=0.75)
     
-	myFmt = mdates.DateFormatter('%d/%m/%Y')
+    myFmt = mdates.DateFormatter('%d/%m/%Y')
     ax.xaxis.set_major_formatter(myFmt)
     plt.gcf().autofmt_xdate()
     plt.savefig(path+".png")

@@ -238,11 +238,11 @@ class StatisticsModule(object):
 
         for idx, article_ID in enumerate(self.article_index.keys()):
             sys.stderr.write("\r %d / %d" % (idx, len(list(self.article_index.keys()))))
-            if "19671_220" == article_ID:
-                with open("./logs", "w") as f:
-                    for d in self.article_index[article_ID].dates:
-                        f.write(str(d) + "\n")
-                return
+            # if "19671_220" == article_ID:
+            #     with open("./logs", "w") as f:
+            #         for d in self.article_index[article_ID].dates:
+            #             f.write(str(d) + "\n")
+            #     return
             if len(self.article_index[article_ID].dates) >= 1:
                 # print (self.article_index[article_ID].dates[:10])
                 plot_dates(self.article_index[article_ID].dates, dirpath + article_ID)
