@@ -13,6 +13,7 @@ from source.ArticleStatistics import get_questions
 import _pickle as pickle
 from flask import Blueprint, render_template, abort, request
 from jinja2 import TemplateNotFound
+from collections import OrderedDict
 
 # Define blueprint
 statistics_page = Blueprint('statistics_page', __name__,
@@ -99,6 +100,8 @@ def get_view(save_options=False):
         #         stats_module.add_filter(filter_type=filt['filter_type'], filter_data=filt['filter_data'])
 
         data, cnt_articles = stats_module.apply_rank_and_filters(r_rank, r_ascending, r_filters)
+        for i, item in enumerate(data):
+                data[i].parts_statistics = OrderedDict(sorted(data[i].parts_statistics.items(), key=lambda x: int(x[0])))
         # data = get_data()
         print ("CNT_ARTICLES", cnt_articles)
         try:
@@ -117,6 +120,8 @@ def get_view(save_options=False):
         codex_list = load_codex_list()
         # data = get_data()
         data, cnt_articles = stats_module.apply_rank_and_filters()
+        for i, item in enumerate(data):
+                data[i].parts_statistics = OrderedDict(sorted(data[i].parts_statistics.items(), key=lambda x: int(x[0])))
         print ("CNT_ARTICLES", cnt_articles)
         try:
             # returns rendered html template with data
