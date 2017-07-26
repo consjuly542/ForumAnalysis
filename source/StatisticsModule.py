@@ -14,7 +14,8 @@ from functools import cmp_to_key
 import sys
 from link_to_article import Link2Article
 from datetime import date
-from PlotsMaker import plot_dates
+# from PlotsMaker import plot_dates
+import guides
 from guides import Guide
 
 
@@ -135,8 +136,13 @@ class StatisticsModule(object):
         self.filters_type = []
         self.filters_data = []
 
-        with open("../data/guide_articles/guide_article_ID", "rb") as f:
-            self.ids_in_guides = cPickle.load(f)
+        # with open("../data/guide_articles/guide_article_ID", "rb") as f:
+        #     self.ids_in_guides = cPickle.load(f)
+
+        with open("../data/guide_articles/guides_list", "rb") as f:
+            self.guides_list = cPickle.load(f)
+
+
 
         # print (len(self.ids_in_guides))
 
@@ -172,6 +178,8 @@ class StatisticsModule(object):
 
                     links = LinksSearcher(question.get_all_text()).get_simple_links()
                     for link in links:
+                        # log.write(link.link_text + "\n")
+                        # log.flush()
                         # function from Alexandrina
                         article = l2a.link2article(link)
                         # print (article)
@@ -279,10 +287,15 @@ class StatisticsModule(object):
 
         if filter_type == 'notInGuide' and filter_data == "0":
             articles_list = [article for article in articles_list\
-                                     if article.official_article.article_ID not in self.ids_in_guides]
+                            if (self.guides_list[0].get_link(article.official_article.article_ID) is None) and\
+                            (self.guides_list[1].get_link(article.official_article.article_ID) is None) and\
+                            (self.guides_list[2].get_link(article.official_article.article_ID) is None) and\
+                            (self.guides_list[3].get_link(article.official_article.article_ID) is None)]
+            # articles_list = [article for article in articles_list\
+            #                 if article.official_article.article_ID not in self.ids_in_guides]
             print( len(articles_list))
 
-
+        
         # self.filters_type.append(filter_type)
         # self.filters_data.append(filter_data)
 
@@ -323,3 +336,13 @@ class StatisticsModule(object):
 
 # 		print (k['questions_cnt'], len(get_questions(k['questions_filename'])), \
 # 			get_questions(k['questions_filename'])[0])
+# g1= Guide("PPN.txt", "Путеводителе по налогам")
+# g2= Guide("PPVS.txt", "Перечне позиций высших судов")
+# g3= Guide("PSP.txt", "Путеводителе по судебной практике")
+# g4= Guide("PTS.txt", "Путеводителе по трудовым спорам")
+
+# guides_list = [g1, g2, g3, g4]
+
+# # print (g.name, g.articles_link.values(), len(g.articles_link))
+# with open("../data/guide_articles/guides_list", "wb") as f:
+#     cPickle.dump(guides_list, f, protocol=pickle.HIGHEST_PROTOCOL)
