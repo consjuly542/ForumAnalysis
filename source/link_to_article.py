@@ -6,9 +6,6 @@ from links_searcher import Link
 import pickle
 from Article import Article
 
-class Guide(object):
-    pass
-
 class Link2Article(object):
     '''
 	class Link2Article

@@ -84,7 +84,7 @@ class ArticleStatistics (object):
 		return self.__dict__
 
 
-def get_questions(questions_filename):
+def get_questions(questions_filename, cnt_visible_question = 500):
 	"""
 	Get list of questions dict from file
 	"""
@@ -95,10 +95,6 @@ def get_questions(questions_filename):
 				questions_list.append(pickle.load(f))
 			except:
 				break
-	questions_list = sorted(questions_list, key=operator.itemgetter('date'), reverse=True)
+	questions_list = sorted(questions_list, key=operator.itemgetter('date'), \
+						reverse=True)[:cnt_visible_question]
 	return questions_list
-
-
-
-
-

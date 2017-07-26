@@ -2,6 +2,9 @@
 import json
 import os
 from Article import Article
+from guides import Guide
+import _pickle as cPickle
+import pickle
     
 def load_data():
     '''
@@ -18,6 +21,8 @@ def load_data():
     article_list = []
     f = open('../data/article_list_laws.txt', 'r')
     data = json.load(f)
+    with open("../data/guide_articles/guides_list", "rb") as f:
+        guides_list = cPickle.load(f)
     #print(data)
     for d in data:
         a = Article()
@@ -34,13 +39,17 @@ def load_data():
         a.article_ID = d['article_ID']
         a.article_link = d['article_link']
 
+        for guide in guides_list:
+            link = guide.get_link(a.article_ID)
+            if link:
+                a.guide_name = guide.name
+                a.guide_link = link
+                break
+
         article_list.append(a)
 
     f.close()
     return article_list
-
-if __name__ == '__main__':
-    print(len(load_data()))
 
 
 

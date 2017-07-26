@@ -18,6 +18,11 @@
                         Статья {{ item['official_article']['article_num'] }} "{{ item['official_article']['article'] }}" <i class="cons-link"><a href="{{item['official_article']['article_link']}}" target="_blank">(ссылка на КонсультантПлюс)</a></i>
                     </h4>
                     <h6 class="card-subtitle mb-2 text-muted">{{ item['official_article']['law'] }} от {{ item['official_article']['date'] }} N{{item['official_article']['law_num']}}</h6>
+                    {% if item['official_article']['guide_name'] %}
+                    <div class="card-block">
+                    <i class="cons-link"><a href="{{item['official_article']['guide_link']}}" target="_blank">(Ссылка на {{ item['official_article']['guide_name'] }})</a></i>
+                    </div>
+                    {% endif %}
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-4"><b>Вопросов:</b> {{ item['questions_cnt'] }}</div>
                         <div class="col-lg-3 col-md-4 col-sm-4"><b>Ответов:</b> {{ item['sum_answers_cnt'] }}</div>
