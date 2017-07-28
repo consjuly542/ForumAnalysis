@@ -29,8 +29,8 @@ def get_articles_list():
     data = []
     for root, _, files in os.walk(os.path.join(ROOT_DIR, 'app/static/articles')):
         for f in files:
-            name = f.split('.')[0]
-            ext = f.split('.')[1]
+            name = f.split(')')[0] + ")"
+            ext = f.split(')')[1].split(".")[1]
             data.append({
                 'name': name,
                 'extension': ext

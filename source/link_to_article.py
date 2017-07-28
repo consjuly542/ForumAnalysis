@@ -198,7 +198,7 @@ class Link2Article(object):
         ID = self.law_searcher(number, name, article_dict)
         #     print(article_dict[ID]['law_name'])
         if ID == '':
-            return (None)
+            return None
         for art in article_dict[ID]['articles']:
             #         print(article_dict[ID]['articles'][art]['article_num'])
 
@@ -206,7 +206,7 @@ class Link2Article(object):
                 article_ID = article_dict[ID]['articles'][art]['article_ID']
                 break
         if (article_ID == ''):
-            return (None)
+            return None
         return article_ID
 
 

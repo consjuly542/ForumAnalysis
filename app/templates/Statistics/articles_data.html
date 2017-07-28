@@ -44,7 +44,7 @@
                             <!-- "{{ url_for('static', filename='article_pics/' + item['official_article']['article_ID'] + '.png') }}" -->
                             <!-- "{{ url_for('static', filename='test.png') }}" -->
                             <img src="{{ url_for('static', filename='article_pics/' + item['official_article']['article_ID'] + '.png') }}" class="img-fluid mx-auto d-block" alt="Dynamics">
-                            <p align="center"><i>Количество упоминаний по дням в 2017</i></p>
+                            <p align="center"><i>Количество упоминаний</i></p>
                         </div>
                     </div>
                     {% if len(item['parts_statistics']) %}

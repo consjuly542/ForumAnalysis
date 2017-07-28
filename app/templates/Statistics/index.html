@@ -48,11 +48,11 @@
                 </div> -->
                 <div class="form-group">
                     <div class="row">
-                        <label for="filter_not_in_guide" class="col-sm-8 col-form-label">Наличие в К+</label>
+                        <label for="filter_not_in_guide" class="col-sm-12 col-form-label">Наличие в Путеводителях</label>
                         <div class="col-sm-12">
                             <select class="form-control" id="filter_notInGuide" name="filter_notInGuide">
                                 <option value="1" {% if all_articles==True %}selected{% endif %}>Не важно</option>
-                                <option value="0" {% if all_articles==False %}selected{% endif %}>Отсутствует в путеводителях</option>
+                                <option value="0" {% if all_articles==False %}selected{% endif %}>Возможно отсутствует</option>
                             </select>
                         </div>
                     </div>
